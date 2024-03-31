@@ -68,5 +68,13 @@ namespace PixelInternalAPI.Extensions
 				cs.Add(transform.GetChild(i));
 			return cs;
 		}
+
+		public static T DuplicatePrefab<T>(this T obj) where T : Component
+		{
+			var o = UnityEngine.Object.Instantiate(obj);
+			UnityEngine.Object.DontDestroyOnLoad(o.gameObject);
+			o.name = obj.name;
+			return o;
+		}
 	}
 }

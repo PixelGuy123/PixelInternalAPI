@@ -8,11 +8,12 @@ namespace PixelInternalAPI.Patches
 	{
 		[HarmonyPatch("SpawnPlayers")]
 		[HarmonyPostfix] // Fix for the camera fovs
-		private static void ResetCameraFovs(CoreGameManager __instance, ref GameCamera[] ___cameras)
+		private static void ResetCameraFovs(CoreGameManager __instance, ref GameCamera[] ___cameras, ref PlayerManager[] ___players)
 		{
 			for (int i = 0; i < __instance.setPlayers; i++)
 			{
 				___cameras[i].GetComponent<CustomPlayerCameraComponent>()?.fovModifiers.Clear();
+				___players[i].gameObject.AddComponent<PlayerAttributesComponent>();
 			}
 		}
 	}
