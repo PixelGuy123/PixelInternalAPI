@@ -9,5 +9,6 @@ namespace PixelInternalAPI.Classes
 		public readonly static LayerMask iClickableLayer = LayerMask.NameToLayer("ClickableCollidableEntities");
 		public readonly static LayerMask ignoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
 		public readonly static LayerMask standardEntities = LayerMask.NameToLayer("StandardEntities");
+		public readonly static LayerMask map = LayerMask.NameToLayer("Map");
 	}
 }
