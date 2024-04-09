@@ -8,6 +8,8 @@ namespace PixelInternalAPI.Extensions
 	{
 		static readonly FieldInfo _audio_minDistance = AccessTools.Field(typeof(PropagatedAudioManager), "minDistance");
 		static readonly FieldInfo _audio_maxDistance = AccessTools.Field(typeof(PropagatedAudioManager), "maxDistance");
+		static readonly FieldInfo _audio_loopOnStart = AccessTools.Field(typeof(AudioManager), "loopOnStart");
+		static readonly FieldInfo _audio_soundObjects = AccessTools.Field(typeof(AudioManager), "soundOnStart");
 
 		public static PropagatedAudioManager CreateAudioManager(this GameObject target, float minDistance = 25f, float maxDistance = 50f, bool isAPrefab = false)
 		{
@@ -20,9 +22,54 @@ namespace PixelInternalAPI.Extensions
 			if (audio.audioDevice != null)
 				Object.Destroy(audio.audioDevice.gameObject);
 			AudioManager.totalIds--;
+			if (AudioManager.totalIds < 0)
+				AudioManager.totalIds = 0;
 			audio.sourceId = 0; // Copypaste from api lmao
 
 			return audio;
+		}
+
+		public static PropagatedAudioManager CreateAudioManager(this GameObject target, bool loopOnStart, SoundObject[] startingAudios, float minDistance = 25f, float maxDistance = 50f, bool isAPrefab = false)
+		{
+			var audio = target.CreateAudioManager(minDistance, maxDistance, isAPrefab);
+			_audio_loopOnStart.SetValue(audio, loopOnStart);
+			_audio_soundObjects.SetValue(audio, startingAudios);
+
+			return audio;
+		}
+
+		public static AudioManager CreateAudioManager(this GameObject target, AudioSource audioDevice, bool loopOnStart, SoundObject[] startingAudios, bool isAPrefab = false)
+		{
+			var audio = target.AddComponent<AudioManager>();
+			audio.audioDevice = audioDevice;
+
+			if (isAPrefab)
+			{
+				AudioManager.totalIds--;
+				if (AudioManager.totalIds < 0) // SOMEHOW THIS IS POSSIBLE
+					AudioManager.totalIds = 0;
+				audio.sourceId = 0;
+			}
+
+			_audio_loopOnStart.SetValue(audio, loopOnStart);
+			_audio_soundObjects.SetValue(audio, startingAudios);
+
+			return audio;
+		}
+
+		public static AudioSource CreateAudioSource(this GameObject target, float minDistance = 25f, float maxDistance = 50f)
+		{
+			var audio = target.AddComponent<AudioSource>();
+			audio.minDistance = minDistance;
+			audio.maxDistance = maxDistance;
+			return audio;
+		}
+
+		public static void MakeAudioManagerNonPositional(this AudioManager man)
+		{
+			man.audioDevice.spatialBlend = 0f;
+			man.positional = false;
+			man.audioDevice.rolloffMode = AudioRolloffMode.Logarithmic;
 		}
 
 		static readonly FieldInfo _entity_rendererBase = AccessTools.Field(typeof(Entity), "rendererBase");

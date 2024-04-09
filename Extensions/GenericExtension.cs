@@ -76,5 +76,11 @@ namespace PixelInternalAPI.Extensions
 			o.name = obj.name;
 			return o;
 		}
+
+		public static CodeMatcher GetCodeInstruction(this CodeMatcher m, out CodeInstruction i)
+		{
+			i = m.Instruction;
+			return m;
+		}
 	}
 }

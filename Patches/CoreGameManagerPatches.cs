@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 
 namespace PixelInternalAPI.Patches
@@ -12,9 +13,10 @@ namespace PixelInternalAPI.Patches
 		{
 			for (int i = 0; i < __instance.setPlayers; i++)
 			{
-				___cameras[i].GetComponent<CustomPlayerCameraComponent>()?.fovModifiers.Clear();
+				___cameras[i].GetComponent<CustomPlayerCameraComponent>()?.ResetFov();
 				___players[i].gameObject.AddComponent<PlayerAttributesComponent>();
 			}
+			GlobalAudioListenerModifier.Reset();
 		}
 	}
 }
