@@ -51,6 +51,7 @@ namespace PixelInternalAPI.Components
 		}
 
 		// ******** IEnumerators *********
+		// Note: Any fov animation REQUIRES to be in this IEnumerator to update the fov properly
 
 		public IEnumerator ReverseSlideFOVAnimation<T>(T instance, float offset, float smoothness = 2f, float referenceFrameRate = 30f) where T : BaseModifier
 		{
@@ -61,16 +62,26 @@ namespace PixelInternalAPI.Components
 			}
 
 			instance.Mod += offset;
+			bool isPositive = instance.Mod >= 0f;
 			if (!fovModifiers.Contains(instance))
-				fovModifiers.Add(instance);
+				AddModifier(instance);
 
 			while (!instance.Mod.CompareFloats(0f))
 			{
-				instance.Mod += (1f - instance.Mod) / smoothness * referenceFrameRate * Time.deltaTime;
+				instance.Mod += -instance.Mod / smoothness * referenceFrameRate * Time.deltaTime;
+				if (isPositive)
+				{
+					if (instance.Mod < 0f)
+						yield break;
+				}
+				else if (instance.Mod > 0f)
+					yield break;
+
+				UpdateFov();
 				yield return null;
 			}
 
-			fovModifiers.Remove(instance);
+			RemoveModifier(instance);
 
 			yield break;
 		}
@@ -83,17 +94,26 @@ namespace PixelInternalAPI.Components
 				yield break;
 			}
 			float off = Mathf.Clamp(instance.Mod + offset, 0f, 125f);
+			bool isPositive = off <= instance.Mod;
 
 			if (!fovModifiers.Contains(instance))
-				fovModifiers.Add(instance);
+				AddModifier(instance);
 
 			while (!instance.Mod.CompareFloats(off))
 			{
 				instance.Mod += (off - instance.Mod) / smoothness * referenceFrameRate * Time.deltaTime;
+
+				if (isPositive)
+				{
+					if (instance.Mod < off)
+						yield break;
+				}
+				else if (instance.Mod > off)
+					yield break;
+
+				UpdateFov();
 				yield return null;
 			}
-
-			fovModifiers.Remove(instance);
 
 			yield break;
 		}
@@ -105,16 +125,29 @@ namespace PixelInternalAPI.Components
 				Debug.LogWarning("Smoothness is less than or equal to 1f");
 				yield break;
 			}
+
+			bool isPositive = instance.Mod >= 0f;
+
 			if (!fovModifiers.Contains(instance))
-				fovModifiers.Add(instance);
+				AddModifier(instance);
 
 			while (!instance.Mod.CompareFloats(0f))
 			{
 				instance.Mod += -instance.Mod / smoothness * referenceFrameRate * Time.deltaTime;
+
+				if (isPositive)
+				{
+					if (instance.Mod < 0f)
+						yield break;
+				}
+				else if (instance.Mod > 0f)
+					yield break;
+
+				UpdateFov();
 				yield return null;
 			}
 
-			fovModifiers.Remove(instance);
+			RemoveModifier(instance);
 
 			yield break;
 		}
