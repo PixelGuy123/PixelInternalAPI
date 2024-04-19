@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
 using System;
+using System.Linq;
+using System.Reflection.Emit;
 
 namespace PixelInternalAPI.Extensions
 {
@@ -9,7 +11,7 @@ namespace PixelInternalAPI.Extensions
 	public static class GenericExtensions
 	{
 		public static bool CompareFloats(this float a, float b) =>
-			Mathf.Abs(a - b) < float.Epsilon;
+			Mathf.Abs(a - b) <= float.Epsilon;
 		public static void ReplaceAt<T>(this IList<T> list, int index, T replacement)
 		{
 			list.RemoveAt(index);
@@ -82,5 +84,31 @@ namespace PixelInternalAPI.Extensions
 			i = m.Instruction;
 			return m;
 		}
+
+		public static T FindResourceObjectByName<T>(string name) where T : UnityEngine.Object =>
+			FindResourceObjects<T>().First(x => x.name == name);
+		public static T FindResourceObject<T>() where T : UnityEngine.Object =>
+			Resources.FindObjectsOfTypeAll<T>().First(x => x.GetInstanceID() > 0);
+		public static T[] FindResourceObjects<T>() where T : UnityEngine.Object =>
+			[.. Resources.FindObjectsOfTypeAll<T>().Where(x => x.GetInstanceID() > 0)];
+
+		public static CodeMatcher InsertAnIfBlock(this CodeMatcher m, CodeInstruction[] parameters, OpCode ifOpcode, params CodeInstruction[] instructions) =>
+			m.Insert(instructions)
+			.InsertAndAdvance(parameters)
+			.InsertBranch(ifOpcode, m.Pos + instructions.Length + 1);
+			
+
+		public static CodeMatcher InsertAnIfBlockAndAdvance(this CodeMatcher m, CodeInstruction[] parameters, OpCode ifOpcode, params CodeInstruction[] instructions) =>
+			m.Insert(instructions)
+			.InsertAndAdvance(parameters)
+			.InsertBranch(ifOpcode, m.Pos + instructions.Length + 1)
+			.Advance(instructions.Length);
+		
+
+
+		public static CodeMatcher GoTo(this CodeMatcher m, int pos) =>
+			m.Advance(pos - m.Pos);
+
+
 	}
 }

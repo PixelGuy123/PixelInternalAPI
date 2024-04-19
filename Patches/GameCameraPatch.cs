@@ -11,6 +11,7 @@ namespace PixelInternalAPI.Patches
 		private static void Prefix(GameCamera __instance) =>
 			__instance.gameObject.AddComponent<CustomPlayerCameraComponent>();
 
+
 		[HarmonyPatch("LateUpdate")]
 		private static void Postfix(Camera ___camCom, Camera ___billboardCam, Matrix4x4 ____billboardCullingMatrix) // Should fix the issue with bill board cam broken
 		{

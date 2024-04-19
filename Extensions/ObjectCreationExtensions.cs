@@ -77,6 +77,7 @@ namespace PixelInternalAPI.Extensions
 		static readonly FieldInfo _entity_trigger = AccessTools.Field(typeof(Entity), "trigger");
 		static readonly FieldInfo _entity_activity = AccessTools.Field(typeof(Entity), "externalActivity");
 		static readonly FieldInfo _entity_etrigger = AccessTools.Field(typeof(Entity), "iEntityTrigger");
+		static readonly FieldInfo _entity_CollisionMask = AccessTools.Field(typeof(Entity), "collisionLayerMask");
 
 		public static Entity CreateEntity(this GameObject target, Collider collider, Collider triggerCollider = null, Transform rendererBase = null, IEntityTrigger[] triggers = null)
 		{
@@ -95,20 +96,36 @@ namespace PixelInternalAPI.Extensions
 			return e;
 		}
 
-		public static Entity CreateEntity(this GameObject target, float colliderRadius, float triggerColliderRadius = 0f, Transform rendererBase = null, IEntityTrigger[] triggers = null)
+		public static Entity CreateEntity(this GameObject target, float colliderRadius, float triggerColliderRadius = 0f, Transform rendererBase = null, IEntityTrigger[] triggers = null) =>
+			CreateEntity(target, colliderRadius, triggerColliderRadius, out _, out _, rendererBase, triggers);
+		
+
+		public static Entity CreateEntity(this GameObject target, float colliderRadius, float triggerColliderRadius, out CapsuleCollider nonTriggerCollider, out CapsuleCollider triggerCollider, Transform rendererBase = null, IEntityTrigger[] triggers = null)
 		{
 			var collider = target.AddComponent<CapsuleCollider>();
 			collider.radius = colliderRadius;
+			nonTriggerCollider = collider;
+
 
 			CapsuleCollider trigger = null;
+			triggerCollider = null;
 			if (triggerColliderRadius > 0f)
 			{
 				trigger = target.AddComponent<CapsuleCollider>();
 				trigger.radius = triggerColliderRadius;
 				trigger.isTrigger = true;
+				triggerCollider = trigger;
 			}
 
 			return CreateEntity(target, collider, trigger, rendererBase, triggers);
 		}
+
+		public static Entity SetEntityCollisionLayerMask(this Entity entity, LayerMask layer)
+		{
+			_entity_CollisionMask.SetValue(entity, layer);
+			return entity;
+		}
+
+		
 	}
 }
