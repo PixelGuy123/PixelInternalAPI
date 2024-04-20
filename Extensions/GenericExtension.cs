@@ -4,6 +4,7 @@ using HarmonyLib;
 using System;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Reflection;
 
 namespace PixelInternalAPI.Extensions
 {
@@ -109,6 +110,19 @@ namespace PixelInternalAPI.Extensions
 		public static CodeMatcher GoTo(this CodeMatcher m, int pos) =>
 			m.Advance(pos - m.Pos);
 
+		// In game extensions
 
+		public static int SlotsAvailable(this ItemManager man)
+		{
+			bool[] lockeds = (bool[])_itm_slotLocked.GetValue(man);
+			int a = 0;
+			for (int i = 0; i <= man.maxItem; i++)
+				if (man.items[i].itemType == Items.None && !lockeds[i])
+					a++;
+			
+			return a;
+		}
+
+		readonly static FieldInfo _itm_slotLocked = AccessTools.Field(typeof(ItemManager), "slotLocked");
 	}
 }
