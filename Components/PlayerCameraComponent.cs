@@ -35,7 +35,7 @@ namespace PixelInternalAPI.Components
 			for (int i = 0; i < fovModifiers.Count; i++)
 					fov += fovModifiers[i].Mod;
 
-			cam.camCom.fieldOfView = Mathf.Clamp(fov, 0f, 125f);
+			cam.camCom.fieldOfView = Mathf.Clamp(fov, minFov, maxFov);
 		}
 
 		public void AddModifier(BaseModifier mod) =>
@@ -97,7 +97,7 @@ namespace PixelInternalAPI.Components
 				Debug.LogWarning("Smoothness is less than or equal to 1f");
 				yield break;
 			}
-			float off = Mathf.Clamp(instance.Mod + offset, 0f, 125f);
+			float off = Mathf.Clamp(instance.Mod + offset, -minFov, maxFov);
 			bool isPositive = off <= instance.Mod;
 
 			if (!fovModifiers.Contains(instance))
@@ -118,6 +118,8 @@ namespace PixelInternalAPI.Components
 
 				yield return null;
 			}
+
+			instance.Mod = off;
 
 			yield break;
 		}
@@ -210,5 +212,7 @@ namespace PixelInternalAPI.Components
 		private float defaultFov;
 
 		readonly List<BaseModifier> fovModifiers = [];
+
+		const float minFov = 20f, maxFov = 125f;
 	}
 }

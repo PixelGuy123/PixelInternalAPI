@@ -38,6 +38,10 @@ namespace PixelInternalAPI.Extensions
 			return audio;
 		}
 
+		public static AudioManager CreateAudioManager(this GameObject target, AudioSource audioDevice, bool isAPrefab = false) =>
+			CreateAudioManager(target, audioDevice, false, [], isAPrefab);
+		
+
 		public static AudioManager CreateAudioManager(this GameObject target, AudioSource audioDevice, bool loopOnStart, SoundObject[] startingAudios, bool isAPrefab = false)
 		{
 			var audio = target.AddComponent<AudioManager>();
@@ -65,11 +69,12 @@ namespace PixelInternalAPI.Extensions
 			return audio;
 		}
 
-		public static void MakeAudioManagerNonPositional(this AudioManager man)
+		public static AudioManager MakeAudioManagerNonPositional(this AudioManager man)
 		{
 			man.audioDevice.spatialBlend = 0f;
 			man.positional = false;
 			man.audioDevice.rolloffMode = AudioRolloffMode.Logarithmic;
+			return man;
 		}
 
 		static readonly FieldInfo _entity_rendererBase = AccessTools.Field(typeof(Entity), "rendererBase");
@@ -79,7 +84,7 @@ namespace PixelInternalAPI.Extensions
 		static readonly FieldInfo _entity_etrigger = AccessTools.Field(typeof(Entity), "iEntityTrigger");
 		static readonly FieldInfo _entity_CollisionMask = AccessTools.Field(typeof(Entity), "collisionLayerMask");
 
-		public static Entity CreateEntity(this GameObject target, Collider collider, Collider triggerCollider = null, Transform rendererBase = null, IEntityTrigger[] triggers = null)
+		public static Entity CreateEntity(this GameObject target, Collider collider, Collider triggerCollider, Transform rendererBase = null, IEntityTrigger[] triggers = null)
 		{
 			LayerMask mask = target.layer;
 			var e = target.AddComponent<Entity>();
@@ -106,16 +111,16 @@ namespace PixelInternalAPI.Extensions
 			collider.radius = colliderRadius;
 			nonTriggerCollider = collider;
 
+			var trigger = target.AddComponent<CapsuleCollider>();
+			trigger.isTrigger = true;
 
-			CapsuleCollider trigger = null;
-			triggerCollider = null;
-			if (triggerColliderRadius > 0f)
-			{
-				trigger = target.AddComponent<CapsuleCollider>();
+			if (triggerColliderRadius <= 0f)
+				trigger.enabled = false;
+			else
 				trigger.radius = triggerColliderRadius;
-				trigger.isTrigger = true;
-				triggerCollider = trigger;
-			}
+			
+			triggerCollider = trigger;
+			
 
 			return CreateEntity(target, collider, trigger, rendererBase, triggers);
 		}

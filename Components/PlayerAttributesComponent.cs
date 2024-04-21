@@ -35,41 +35,26 @@ namespace PixelInternalAPI.Components
 		}
 		public bool HasAttribute(string s) => attributes.ContainsKey(s);
 
-		readonly private List<StaminaModifier> staminaMods = [];
-		public void AddStaminaMod(StaminaModifier mod)
-		{
-			staminaMods.Add(mod);
-			UpdateMovement();
-		}
+		readonly public List<StaminaModifier> StaminaMods = [];
 
-		public void RemoveStaminaMod(StaminaModifier mod)
-		{
-			staminaMods.Remove(mod);
-			UpdateMovement();
-		}
+		readonly public List<SpeedModifier> SpeedMods = [];
 
-		readonly private List<BaseModifier> speedMods = [];
-
-		public void AddSpeedMod(BaseModifier mod)
-		{
-			speedMods.Add(mod);
-			UpdateMovement();
-		}
-
-		public void RemoveSpeedMod(BaseModifier mod)
-		{
-			speedMods.Remove(mod);
-			UpdateMovement();
-		}
-
-		void UpdateMovement()
+		void Update()
 		{
 			float wspeed = walkSpeed, rspeed = runSpeed;
 
-			for (int i = 0; i < speedMods.Count; i++)
+			for (int i = 0; i < SpeedMods.Count; i++)
 			{
-				wspeed *= speedMods[i].Mod;
-				rspeed *= speedMods[i].Mod;
+				if (!SpeedMods[i].Adder)
+				{
+					wspeed *= SpeedMods[i].WalkSpeed;
+					rspeed *= SpeedMods[i].RunSpeed;
+				}
+				else
+				{
+					wspeed += SpeedMods[i].WalkSpeed;
+					rspeed += SpeedMods[i].RunSpeed;
+				}
 			}
 
 			plm.walkSpeed = wspeed;
@@ -77,11 +62,11 @@ namespace PixelInternalAPI.Components
 
 			float sRise = staminaRise, sDrop = staminaDrop, sMax = staminaMax;
 
-			for (int i = 0; i < staminaMods.Count; i++)
+			for (int i = 0; i < StaminaMods.Count; i++)
 			{
-				sRise *= staminaMods[i].StaminaRiseMod;
-				sDrop *= staminaMods[i].StaminaDropMod;
-				sMax *= staminaMods[i].StaminaMaxMod;
+				sRise *= StaminaMods[i].StaminaRiseMod;
+				sDrop *= StaminaMods[i].StaminaDropMod;
+				sMax *= StaminaMods[i].StaminaMaxMod;
 			}
 
 			plm.staminaDrop = sDrop;

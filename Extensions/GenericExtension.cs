@@ -11,8 +11,12 @@ namespace PixelInternalAPI.Extensions
 
 	public static class GenericExtensions
 	{
+		public static float QuadraticEquation(this float x, float a, float b, float c) =>
+			(a * (x * x)) + (b * x) + c;
+		public static float LinearEquation(this float x, float a, float b) =>
+			(a * x) + b;
 		public static bool CompareFloats(this float a, float b) =>
-			Mathf.Abs(a - b) <= float.Epsilon;
+			Mathf.Abs(a - b) <= 0.01; // I guess this works?
 		public static void ReplaceAt<T>(this IList<T> list, int index, T replacement)
 		{
 			list.RemoveAt(index);
