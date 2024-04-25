@@ -4,10 +4,10 @@ using PixelInternalAPI.Components;
 
 namespace PixelInternalAPI.Patches
 {
-	[HarmonyPatch(typeof(CoreGameManager))]
-	internal class CoreGameManagerPatches
+	[HarmonyPatch]
+	internal class GameManagerPatches
 	{
-		[HarmonyPatch("SpawnPlayers")]
+		[HarmonyPatch(typeof(CoreGameManager), "SpawnPlayers")]
 		[HarmonyPostfix] // Fix for the camera fovs
 		private static void ResetCameraFovs(CoreGameManager __instance, ref GameCamera[] ___cameras, ref PlayerManager[] ___players)
 		{
@@ -16,7 +16,11 @@ namespace PixelInternalAPI.Patches
 				___cameras[i].GetComponent<CustomPlayerCameraComponent>()?.ResetFov();
 				___players[i].gameObject.AddComponent<PlayerAttributesComponent>();
 			}
-			GlobalAudioListenerModifier.Reset();
 		}
+
+		[HarmonyPatch(typeof(BaseGameManager), "BeginPlay")]
+		[HarmonyPostfix] // Fix for the camera fovs
+		private static void FixAudioListener() =>
+			GlobalAudioListenerModifier.Reset();
 	}
 }

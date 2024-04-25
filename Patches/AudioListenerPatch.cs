@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace PixelInternalAPI.Patches
 {
+	
 	[HarmonyPatch(typeof(AudioListener))]
 	internal class AudioListenerPatch
 	{
@@ -19,4 +20,5 @@ namespace PixelInternalAPI.Patches
 			__result = GlobalAudioListenerModifier.ListenerIsPaused;
 		
 	}
+	
 }
