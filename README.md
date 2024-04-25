@@ -1,1 +1,1 @@
-You're not allowed by any means to use this api in your mods.
+You're not allowed by any means to use this api in your mods as a dependency. (the licenses don't really match up my prederences, that's why I sound restrict). You're only allowed to use this code freely if I allow it.
