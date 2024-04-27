@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace PixelInternalAPI.Components
 {
+	/// <summary>
+	/// A component added to NPCs to modify some aspects from them.
+	/// </summary>
 	public class NPCAttributesContainer : MonoBehaviour
 	{
 		// ******** Looker stuff **********
@@ -11,15 +14,26 @@ namespace PixelInternalAPI.Components
 		Looker looker;
 
 		internal List<BaseModifier> lookermods = [];
-
+		/// <summary>
+		/// Checks if the <paramref name="modifier"/> exists in the looker mods.
+		/// </summary>
+		/// <param name="modifier"></param>
+		/// <returns>true if <paramref name="modifier"/> exists inside the looker mods, otherwise false.</returns>
 		public bool HasLookerMod(BaseModifier modifier) => lookermods.Contains(modifier);
 
+		/// <summary>
+		/// Adds a <paramref name="mod"/> to the looker mods.
+		/// </summary>
+		/// <param name="mod"></param>
 		public void AddLookerMod(BaseModifier mod)
 		{
 			lookermods.Add(mod);
 			UpdateLooker();
 		}
-
+		/// <summary>
+		/// Removes a <paramref name="mod"/> to the looker mods.
+		/// </summary>
+		/// <param name="mod"></param>
 		public void RemoveLookerMod(BaseModifier mod)
 		{
 			lookermods.Remove(mod);

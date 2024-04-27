@@ -4,19 +4,26 @@ using UnityEngine;
 
 namespace PixelInternalAPI.Components
 {
+	/// <summary>
+	/// A component to add attributes to the player.
+	/// </summary>
 	public class PlayerAttributesComponent : MonoBehaviour
 	{ 
 		void Awake()
 		{
-			plm = GetComponent<PlayerMovement>();
-			walkSpeed = plm.walkSpeed;
-			runSpeed = plm.runSpeed;
-			staminaDrop = plm.staminaDrop;
-			staminaMax = plm.staminaMax;
-			staminaRise = plm.staminaRise;
+			pm = GetComponent<PlayerManager>();
+			walkSpeed = pm.plm.walkSpeed;
+			runSpeed = pm.plm.runSpeed;
+			staminaDrop = pm.plm.staminaDrop;
+			staminaMax = pm.plm.staminaMax;
+			staminaRise = pm.plm.staminaRise;
 		}
 
 		private readonly Dictionary<string, int> attributes = [];
+		/// <summary>
+		/// Adds an attribute to the player.
+		/// </summary>
+		/// <param name="s"></param>
 		public void AddAttribute(string s) 
 		{
 			if (attributes.ContainsKey(s))
@@ -24,6 +31,10 @@ namespace PixelInternalAPI.Components
 			else
 				attributes.Add(s, 1);
 		}
+		/// <summary>
+		/// Removes the attribute from the player.
+		/// </summary>
+		/// <param name="s"></param>
 		public void RemoveAttribute(string s)
 		{
 			if (attributes.ContainsKey(s))
@@ -33,10 +44,20 @@ namespace PixelInternalAPI.Components
 					attributes.Remove(s);
 			}
 		}
+		/// <summary>
+		/// If the attribute exists in the player.
+		/// </summary>
+		/// <param name="s"></param>
+		/// <returns>true if the attribute exists in the player, otherwise false.</returns>
 		public bool HasAttribute(string s) => attributes.ContainsKey(s);
 
+		/// <summary>
+		/// The stamina mods (you can add and remove).
+		/// </summary>
 		readonly public List<StaminaModifier> StaminaMods = [];
-
+		/// <summary>
+		/// The speed mods (you can add and remove).
+		/// </summary>
 		readonly public List<SpeedModifier> SpeedMods = [];
 
 		void Update()
@@ -57,8 +78,8 @@ namespace PixelInternalAPI.Components
 				}
 			}
 
-			plm.walkSpeed = wspeed;
-			plm.runSpeed = rspeed;
+			pm.plm.walkSpeed = wspeed;
+			pm.plm.runSpeed = rspeed;
 
 			float sRise = staminaRise, sDrop = staminaDrop, sMax = staminaMax;
 
@@ -69,13 +90,17 @@ namespace PixelInternalAPI.Components
 				sMax *= StaminaMods[i].StaminaMaxMod;
 			}
 
-			plm.staminaDrop = sDrop;
-			plm.staminaMax = sMax;
-			plm.staminaRise = sRise;
+			pm.plm.staminaDrop = sDrop;
+			pm.plm.staminaMax = sMax;
+			pm.plm.staminaRise = sRise;
 
 		}
 
-		PlayerMovement plm;
+		PlayerManager pm;
+		/// <summary>
+		/// Returns the <see cref="PlayerManager"/> referenced by the component.
+		/// </summary>
+		public PlayerManager Pm => pm;
 
 		float walkSpeed, runSpeed, staminaRise, staminaDrop, staminaMax;
 	}

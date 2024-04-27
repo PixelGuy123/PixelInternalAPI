@@ -2,6 +2,9 @@
 
 namespace PixelInternalAPI.Components
 {
+	/// <summary>
+	/// A component to make the object rotate just like a billboard does.
+	/// </summary>
     public class BillboardRotator : MonoBehaviour
     {
         private void LateUpdate()
