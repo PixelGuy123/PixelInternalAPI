@@ -140,6 +140,7 @@ namespace PixelInternalAPI.Extensions
 		}
 		/// <summary>
 		/// Creates an <see cref="Entity"/> component to an object. Warning: Adding an <see cref="Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs. The default collider added is the <see cref="CapsuleCollider"/>
+		/// <para>If the <paramref name="triggerColliderRadius"/> is less or equal to 0, the collider is disabled</para>
 		/// </summary>
 		/// <param name="target"></param>
 		/// <param name="colliderRadius"></param>
@@ -147,11 +148,12 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="rendererBase"></param>
 		/// <param name="triggers"></param>
 		/// <returns>The <see cref="Entity"/> component</returns>
-		public static Entity CreateEntity(this GameObject target, float colliderRadius, float triggerColliderRadius, Transform rendererBase = null, IEntityTrigger[] triggers = null) =>
+		public static Entity CreateEntity(this GameObject target, float colliderRadius, float triggerColliderRadius = 0f, Transform rendererBase = null, IEntityTrigger[] triggers = null) =>
 			CreateEntity(target, colliderRadius, triggerColliderRadius, out _, out _, rendererBase, triggers);
 
 		/// <summary>
 		/// Creates an <see cref="Entity"/> component to an object. Warning: Adding an <see cref="Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs. The default collider added is the <see cref="CapsuleCollider"/>
+		/// <para>If the <paramref name="triggerColliderRadius"/> is less or equal to 0, the collider is disabled</para>
 		/// </summary>
 		/// <param name="target"></param>
 		/// <param name="colliderRadius"></param>
