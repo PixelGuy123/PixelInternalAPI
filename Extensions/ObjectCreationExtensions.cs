@@ -291,7 +291,11 @@ namespace PixelInternalAPI.Extensions
 
 			var renderer = (MeshRenderer)_sodaMach_meshRenderer.GetValue(machine);
 			renderer.materials[1].mainTexture = sodaTex;
-			((Material)_sodaMach_outofstockmat.GetValue(machine)).mainTexture = sodaOutTex;
+			var mat = new Material((Material)_sodaMach_outofstockmat.GetValue(machine))
+			{
+				mainTexture = sodaOutTex
+			};
+			_sodaMach_outofstockmat.SetValue(machine, mat);
 
 			return machine;
 		}
