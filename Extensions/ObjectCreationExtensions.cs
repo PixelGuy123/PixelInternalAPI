@@ -300,30 +300,40 @@ namespace PixelInternalAPI.Extensions
 			return machine;
 		}
 		/// <summary>
-		/// Set the <paramref name="potentialItems"/> from the <paramref name="mach"/> and sets the <paramref name="usesLeft"/> aswell.
+		/// Set the <paramref name="potentialItems"/> from the <paramref name="mach"/>.
 		/// </summary>
 		/// <param name="mach"></param>
-		/// <param name="usesLeft"></param>
 		/// <param name="potentialItems"></param>
 		/// <returns>The <paramref name="mach"/> itself.</returns>
-		public static SodaMachine SetPotentialItemsAndUses(this SodaMachine mach, int usesLeft, params WeightedItemObject[] potentialItems)
+		public static SodaMachine SetPotentialItems(this SodaMachine mach, params WeightedItemObject[] potentialItems)
 		{
 			_sodaMach_potentialitems.SetValue(mach, potentialItems);
-			_sodaMach_usesleft.SetValue(mach, usesLeft);
 			return mach;
 		}
 		/// <summary>
-		/// Set the <paramref name="usesLeft"/> from the <paramref name="mach"/> and add new <paramref name="potentialItems"/> to the <paramref name="mach"/>.
+		/// Sets the <paramref name="usesLeft"/> from the <paramref name="mach"/> (if any value below 0 is inputted, the soda machine will have infinite uses).
 		/// </summary>
 		/// <param name="mach"></param>
 		/// <param name="usesLeft"></param>
+		/// <returns>The <paramref name="mach"/> itself.</returns>
+		public static SodaMachine SetUses(this SodaMachine mach, int usesLeft)
+		{
+			_sodaMach_usesleft.SetValue(mach, usesLeft);
+			mach.GetComponent<SodaMachineCustomComponent>().infiniteUses = usesLeft < 0;
+				
+			return mach;
+		}
+		/// <summary>
+		/// Adds new <paramref name="potentialItems"/> to the <paramref name="mach"/>.
+		/// </summary>
+		/// <param name="mach"></param>
 		/// <param name="potentialItems"></param>
 		/// <returns>The <paramref name="mach"/> itself.</returns>
-		public static SodaMachine SetUsesAndAddNewPotentialItems(this SodaMachine mach, int usesLeft, params WeightedItemObject[] potentialItems)
+		public static SodaMachine AddNewPotentialItems(this SodaMachine mach,params WeightedItemObject[] potentialItems)
 		{
 			var itms = (WeightedItemObject[])_sodaMach_potentialitems.GetValue(mach);
 			itms = itms.AddRangeToArray(potentialItems);
-			mach.SetPotentialItemsAndUses(usesLeft, itms);
+			mach.SetPotentialItems(itms);
 			return mach;
 		}
 		/// <summary>

@@ -7,5 +7,8 @@ namespace PixelInternalAPI.Components
 	{
 		[SerializeField]
 		internal List<Items> requiredItems = [];
+
+		[SerializeField]
+		internal bool infiniteUses = false;
 	}
 }
