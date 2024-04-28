@@ -46,13 +46,13 @@ namespace PixelInternalAPI.Extensions
 						RenderTextureFormat.ARGB32,
 						RenderTextureReadWrite.sRGB,
 						1);
-			renderTex.useMipMap = false;
 
 			Graphics.Blit(source, renderTex);
 			RenderTexture previous = RenderTexture.active;
 			RenderTexture.active = renderTex;
 			Texture2D readableText = new(source.width, source.height);
 			readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
+			readableText.mipMapBias = 0f;
 			readableText.Apply();
 			RenderTexture.active = previous;
 			RenderTexture.ReleaseTemporary(renderTex);

@@ -272,7 +272,6 @@ namespace PixelInternalAPI.Extensions
 		readonly static FieldInfo _sodaMach_outofstockmat = AccessTools.Field(typeof(SodaMachine), "outOfStockMat");
 		readonly static FieldInfo _sodaMach_potentialitems = AccessTools.Field(typeof(SodaMachine), "potentialItems");
 		readonly static FieldInfo _sodaMach_usesleft = AccessTools.Field(typeof(SodaMachine), "usesLeft");
-		readonly static FieldInfo _sodaMach_requireditem = AccessTools.Field(typeof(SodaMachine), "requiredItem");
 
 		/// <summary>
 		/// Creates a new <see cref="SodaMachine"/> instance. <paramref name="sodaTex"/> and <paramref name="sodaOutTex"/> sets the textures for new <see cref="SodaMachine"/>. <paramref name="isPrefab"/> disables the <see cref="SodaMachine"/> and set to the DontDestroyOnLoad scene.
@@ -291,7 +290,7 @@ namespace PixelInternalAPI.Extensions
 			}
 
 			var renderer = (MeshRenderer)_sodaMach_meshRenderer.GetValue(machine);
-			renderer.material.mainTexture = sodaTex;
+			renderer.materials[1].mainTexture = sodaTex;
 			((Material)_sodaMach_outofstockmat.GetValue(machine)).mainTexture = sodaOutTex;
 
 			return machine;

@@ -7,9 +7,9 @@ namespace PixelInternalAPI.Patches
 	internal class SodaMachinePatch
 	{
 		[HarmonyPrefix]
-		private static bool OverrideUse(SodaMachine __instance, ref bool __result, Items item, int ___usesLeft)
+		private static bool OverrideUse(SodaMachine __instance, ref bool __result, Items checkItem, int ___usesLeft)
 		{
-			__result = ___usesLeft > 0 && __instance.GetComponent<SodaMachineCustomComponent>().requiredItems.Contains(item);
+			__result = ___usesLeft > 0 && __instance.GetComponent<SodaMachineCustomComponent>().requiredItems.Contains(checkItem);
 			return false;
 		}
 	}

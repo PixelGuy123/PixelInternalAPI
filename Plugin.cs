@@ -18,7 +18,12 @@ namespace PixelInternalAPI
 
 			LoadingEvents.RegisterOnAssetsLoaded(() =>
 			{
-				GenericExtensions.FindResourceObjects<SodaMachine>().Do(x => x.gameObject.AddComponent<SodaMachineCustomComponent>());
+				GenericExtensions.FindResourceObjects<SodaMachine>().Do(x => {
+
+					var comp = x.gameObject.AddComponent<SodaMachineCustomComponent>();
+					comp.requiredItems.Add(Items.Quarter);
+
+				});
 				ObjectCreationExtensions.prefab = GenericExtensions.FindResourceObject<SodaMachine>();
 			}, false);
 
