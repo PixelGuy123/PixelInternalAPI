@@ -8,6 +8,7 @@ using System.Reflection;
 
 namespace PixelInternalAPI
 {
+	[BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
 	internal class BasePlugin : BaseUnityPlugin
 	{
@@ -45,6 +46,8 @@ namespace PixelInternalAPI
 			}, true);
 		}
 
+		internal static List<SodaMachineCustomComponent> _machines = [];
+
 		readonly static FieldInfo sodaMachineItems = AccessTools.Field(typeof(SodaMachine), "potentialItems");
 		readonly static FieldInfo _mysteryroom_items = AccessTools.Field(typeof(MysteryRoom), "items");
 	}
@@ -75,6 +78,11 @@ namespace PixelInternalAPI
 		/// <param name="item"></param>
 		public static void AddMysteryItem(WeightedItemObject item) =>
 			_mysteryItems.Add(item);
+		/// <summary>
+		/// Adds the <paramref name="item"/> to all the vending machines (created with this api) to accept the <paramref name="item"/> as a quarter.
+		/// </summary>
+		/// <param name="item"></param>
+		public static void AddQuaterTypeItemToVendingMachine(this Items item) => BasePlugin._machines.ForEach(x => x.requiredItems.Add(item));
 
 		static internal List<WeightedItemObject> _vendingMachineItems = [];
 		static internal List<WeightedItemObject> _mysteryItems = [];

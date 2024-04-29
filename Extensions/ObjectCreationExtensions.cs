@@ -274,7 +274,8 @@ namespace PixelInternalAPI.Extensions
 		readonly static FieldInfo _sodaMach_usesleft = AccessTools.Field(typeof(SodaMachine), "usesLeft");
 
 		/// <summary>
-		/// Creates a new <see cref="SodaMachine"/> instance. <paramref name="sodaTex"/> and <paramref name="sodaOutTex"/> sets the textures for new <see cref="SodaMachine"/>. <paramref name="isPrefab"/> disables the <see cref="SodaMachine"/> and set to the DontDestroyOnLoad scene.
+		/// Creates a new <see cref="SodaMachine"/> instance. <paramref name="sodaTex"/> and <paramref name="sodaOutTex"/> sets the textures for new <see cref="SodaMachine"/>.
+		/// <para><paramref name="isPrefab"/> disables the <see cref="SodaMachine"/> and set to the DontDestroyOnLoad scene.</para>
 		/// </summary>
 		/// <param name="sodaTex"></param>
 		/// <param name="sodaOutTex"></param>
@@ -296,6 +297,8 @@ namespace PixelInternalAPI.Extensions
 				mainTexture = sodaOutTex
 			};
 			_sodaMach_outofstockmat.SetValue(machine, mat);
+
+			BasePlugin._machines.Add(machine.GetComponent<SodaMachineCustomComponent>());
 
 			return machine;
 		}
