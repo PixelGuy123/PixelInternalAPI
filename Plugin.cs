@@ -23,7 +23,7 @@ namespace PixelInternalAPI
 
 					var comp = x.gameObject.AddComponent<SodaMachineCustomComponent>();
 					comp.requiredItems.Add(Items.Quarter);
-
+					_machines.Add(comp);
 				});
 				ObjectCreationExtensions.prefab = GenericExtensions.FindResourceObject<SodaMachine>();
 			}, false);
