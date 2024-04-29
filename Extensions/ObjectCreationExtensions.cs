@@ -318,9 +318,9 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <paramref name="mach"/> itself.</returns>
 		public static SodaMachine SetUses(this SodaMachine mach, int usesLeft)
 		{
-			_sodaMach_usesleft.SetValue(mach, usesLeft);
 			mach.GetComponent<SodaMachineCustomComponent>().infiniteUses = usesLeft < 0;
-				
+			_sodaMach_usesleft.SetValue(mach, usesLeft <= 0 ? 99 : usesLeft);
+
 			return mach;
 		}
 		/// <summary>
@@ -361,6 +361,38 @@ namespace PixelInternalAPI.Extensions
 			comp.requiredItems.AddRange(acceptableItems);
 			return mach;
 		}
+
+		// **************** Animated Sprite Rotator ****************
+		readonly static FieldInfo _animatedSpriteRotator_renderer = AccessTools.Field(typeof(AnimatedSpriteRotator), "renderer");
+		readonly static FieldInfo _animatedSpriteRotator_spriteMap = AccessTools.Field(typeof(AnimatedSpriteRotator), "spriteMap");
+
+		/// <summary>
+		/// Creates a <see cref="AnimatedSpriteRotator"/> component for the <paramref name="npc"/>.
+		/// <para>The <paramref name="rendererIdx"/> indicate which renderer to be used in the <see cref="NPC.spriteRenderer"/> array.</para>
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="npc"></param>
+		/// <param name="rendererIdx"></param>
+		/// <param name="map"></param>
+		/// <returns>The instance of <see cref="AnimatedSpriteRotator"/>.</returns>
+		public static AnimatedSpriteRotator CreateAnimatedSpriteRotator<T>(this T npc, int rendererIdx, params SpriteRotationMap[] map) where T : NPC
+		{
+			var animator = npc.gameObject.AddComponent<AnimatedSpriteRotator>();
+			_animatedSpriteRotator_renderer.SetValue(animator, npc.spriteRenderer[rendererIdx]);
+			_animatedSpriteRotator_spriteMap.SetValue(animator, map);
+			return animator;
+		}
+
+		/// <summary>
+		/// Creates a <see cref="AnimatedSpriteRotator"/> component for the <paramref name="npc"/>.
+		/// <para>The default index used for the <see cref="NPC.spriteRenderer"/> is 0.</para>
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="npc"></param>
+		/// <param name="map"></param>
+		/// <returns>The instance of <see cref="AnimatedSpriteRotator"/>.</returns>
+		public static AnimatedSpriteRotator CreateAnimatedSpriteRotator<T>(this T npc, params SpriteRotationMap[] map) where T : NPC =>
+			CreateAnimatedSpriteRotator<T>(npc, 0, map);
 
 
 

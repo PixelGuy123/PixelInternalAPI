@@ -306,7 +306,30 @@ namespace PixelInternalAPI.Extensions
 			
 			return a;
 		}
+		/// <summary>
+		/// A simple method to set the field <c>bypassRotation</c> from the <see cref="AnimatedSpriteRotator"/>.
+		/// <para>If <paramref name="bypass"/> is true. The <see cref="AnimatedSpriteRotator"/> will begin using the <see cref="AnimatedSpriteRotator.targetSprite"/> instead of the map.</para>
+		/// </summary>
+		/// <param name="rotator"></param>
+		/// <param name="bypass"></param>
+		public static void BypassRotation(this AnimatedSpriteRotator rotator, bool bypass) =>
+			animatedsprite_bypassrotation.SetValue(rotator, bypass);
 
+		/// <summary>
+		/// Creates an instance of <see cref="SpriteRotationMap"/>.
+		/// </summary>
+		/// <param name="angleCount"></param>
+		/// <param name="sprites"></param>
+		/// <returns>An instance of <see cref="SpriteRotationMap"/>.</returns>
+		public static SpriteRotationMap CreateRotationMap(int angleCount, params Sprite[] sprites)
+		{
+			var map = new SpriteRotationMap() { angleCount = angleCount};
+			rotMap_sprites.SetValue(map, sprites);
+			return map;
+		}
+
+		readonly static FieldInfo rotMap_sprites = AccessTools.Field(typeof(SpriteRotationMap), "spriteSheet");
+		readonly static FieldInfo animatedsprite_bypassrotation = AccessTools.Field(typeof(AnimatedSpriteRotator), "bypassRotation");
 		readonly static FieldInfo _itm_slotLocked = AccessTools.Field(typeof(ItemManager), "slotLocked");
 	}
 }
