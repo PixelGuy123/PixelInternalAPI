@@ -289,7 +289,15 @@ namespace PixelInternalAPI.Extensions
 		public static CodeMatcher GoTo(this CodeMatcher m, int pos) =>
 			m.Advance(pos - m.Pos);
 
-		// In game extensions
+		/// <summary>
+		/// Always rounds up all the positions in the <paramref name="vec"/> (if the number is 0.5, it'll always round up to 1 for example).
+		/// </summary>
+		/// <param name="vec"></param>
+		/// <returns>A <see cref="Vector3"/> with all its values rounded up</returns>
+		public static Vector3 CeilVector(this Vector3 vec) =>
+			new(Mathf.Ceil(vec.x), Mathf.Ceil(vec.y), Mathf.Ceil(vec.z));
+
+		// *********************************** In game extensions ***********************************
 
 		/// <summary>
 		/// Return the amount of empty slots in the inventory (excluding locked slots).
