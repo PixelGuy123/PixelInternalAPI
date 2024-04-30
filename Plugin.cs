@@ -58,7 +58,7 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.0.5";
+		internal const string PLUGIN_VERSION = "1.0.4";
 	}
 	/// <summary>
 	/// A basic class that store some info that can be useful for the game.
