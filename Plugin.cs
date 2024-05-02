@@ -1,10 +1,12 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 namespace PixelInternalAPI
 {
@@ -19,6 +21,7 @@ namespace PixelInternalAPI
 
 			LoadingEvents.RegisterOnAssetsLoaded(() =>
 			{
+				// ****** Soda machine *******
 				GenericExtensions.FindResourceObjects<SodaMachine>().Do(x => {
 
 					var comp = x.gameObject.AddComponent<SodaMachineCustomComponent>();
@@ -26,6 +29,29 @@ namespace PixelInternalAPI
 					_machines.Add(comp);
 				});
 				ObjectCreationExtensions.prefab = GenericExtensions.FindResourceObject<SodaMachine>();
+
+				// ******* bill boards ********
+				// Sprite Billboard object
+				var baseSprite = new GameObject("SpriteBillBoard").AddComponent<SpriteRenderer>();
+				baseSprite.material = GenericExtensions.FindResourceObjectByName<Material>("SpriteStandard_Billboard");
+				baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+				baseSprite.receiveShadows = false;
+
+				baseSprite.gameObject.layer = LayerStorage.billboardLayer;
+				DontDestroyOnLoad(baseSprite.gameObject);
+				ObjectCreationExtensions._billboardprefab = baseSprite;
+
+
+				// Sprite Non-Billboard object
+				baseSprite = new GameObject("SpriteNoBillBoard").AddComponent<SpriteRenderer>();
+				baseSprite.material = GenericExtensions.FindResourceObjectByName<Material>("SpriteStandard_NoBillboard");
+				baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+				baseSprite.receiveShadows = false;
+
+				baseSprite.gameObject.layer = LayerStorage.billboardLayer;
+				DontDestroyOnLoad(baseSprite.gameObject);
+				ObjectCreationExtensions._nonbillboardprefab = baseSprite;
+
 			}, false);
 
 			LoadingEvents.RegisterOnAssetsLoaded(() => // Make items get into random vending machines
@@ -44,6 +70,10 @@ namespace PixelInternalAPI
 					_mysteryroom_items.SetValue(x, items);
 				});
 			}, true);
+
+			// Put the necessary callbacks for prefabs
+			ResourceManager.AddGeneratorStartCallback((_) => ResourceManager._prefabs.ForEach(x => x.SetActive(true)));
+			ResourceManager.AddPostGenCallback((_) => ResourceManager._prefabs.ForEach(x => x.SetActive(false)));
 		}
 
 		internal static List<SodaMachineCustomComponent> _machines = [];
@@ -58,33 +88,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.0.4";
-	}
-	/// <summary>
-	/// A basic class that store some info that can be useful for the game.
-	/// </summary>
-	public static class ResourceManager // Resources stuff I guess? Will be stored here
-	{
-		/// <summary>
-		/// Adds an weighted item to the crazy vending machine loot table. Note: This must be called at RegisterOnAssetsLoaded from the LoadingEvents, non-post).
-		/// </summary>
-		/// <param name="item"></param>
-		public static void AddWeightedItemToCrazyMachine(WeightedItemObject item) => // yay
-			_vendingMachineItems.Add(item);
-
-		/// <summary>
-		/// Adds an weighted item to the <see cref="MysteryRoom"/> event loot table. Note: This must be called at RegisterOnAssetsLoaded from the LoadingEvents, non-post).
-		/// </summary>
-		/// <param name="item"></param>
-		public static void AddMysteryItem(WeightedItemObject item) =>
-			_mysteryItems.Add(item);
-		/// <summary>
-		/// Adds the <paramref name="item"/> to all the vending machines (created with this api) to accept the <paramref name="item"/> as a quarter.
-		/// </summary>
-		/// <param name="item"></param>
-		public static void AddQuaterTypeItemToVendingMachine(this Items item) => BasePlugin._machines.ForEach(x => x.requiredItems.Add(item));
-
-		static internal List<WeightedItemObject> _vendingMachineItems = [];
-		static internal List<WeightedItemObject> _mysteryItems = [];
+		internal const string PLUGIN_VERSION = "1.0.5";
 	}
 }

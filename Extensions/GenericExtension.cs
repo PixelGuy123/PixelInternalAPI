@@ -195,12 +195,36 @@ namespace PixelInternalAPI.Extensions
 			return cs;
 		}
 		/// <summary>
+		/// Transforms the <paramref name="obj"/> into a prefab by putting it in the DontDestroyOnLoad scene and disabling it (if <paramref name="keepActive"/> is false).
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="keepActive"></param>
+		/// <returns>The <paramref name="obj"/> itself.</returns>
+		public static GameObject SetAsPrefab(this GameObject obj, bool keepActive = false) 
+		{
+			obj.SetActive(keepActive);
+			UnityEngine.Object.DontDestroyOnLoad(obj);
+			return obj;
+		}
+		/// <summary>
 		/// Instantiate an <paramref name="obj"/> but maintaning the same name and put in the DontDestroyOnLoad scene.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
 		/// <param name="obj"></param>
+		/// <typeparam name="T"></typeparam>
 		/// <returns>An instantiated <paramref name="obj"/>.</returns>
 		public static T DuplicatePrefab<T>(this T obj) where T : Component
+		{
+			var o = UnityEngine.Object.Instantiate(obj);
+			UnityEngine.Object.DontDestroyOnLoad(o.gameObject);
+			o.name = obj.name;
+			return o;
+		}
+		/// <summary>
+		/// Instantiate an <paramref name="obj"/> but maintaning the same name and put in the DontDestroyOnLoad scene.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns>An instantiated <paramref name="obj"/>.</returns>
+		public static GameObject DuplicatePrefab(this GameObject obj)
 		{
 			var o = UnityEngine.Object.Instantiate(obj);
 			UnityEngine.Object.DontDestroyOnLoad(o.gameObject);
@@ -306,6 +330,14 @@ namespace PixelInternalAPI.Extensions
 			
 			return a;
 		}
+		/// <summary>
+		/// Tells if the slot from <paramref name="man"/> at <paramref name="idx"/> is locked or not.
+		/// </summary>
+		/// <param name="man"></param>
+		/// <param name="idx"></param>
+		/// <returns>If true, the slot is locked, otherwise false.</returns>
+		public static bool IsSlotLocked(this ItemManager man, int idx) =>
+			((bool[])_itm_slotLocked.GetValue(man))[idx];
 		/// <summary>
 		/// A simple method to set the field <c>bypassRotation</c> from the <see cref="AnimatedSpriteRotator"/>.
 		/// <para>If <paramref name="bypass"/> is true. The <see cref="AnimatedSpriteRotator"/> will begin using the <see cref="AnimatedSpriteRotator.targetSprite"/> instead of the map.</para>

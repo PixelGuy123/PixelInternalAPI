@@ -1,7 +1,11 @@
 ﻿using HarmonyLib;
+using MTM101BaldAPI.Components;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using System.Reflection;
+using System.Security.Policy;
 using UnityEngine;
+using static UnityEngine.Object;
 
 namespace PixelInternalAPI.Extensions
 {
@@ -397,7 +401,88 @@ namespace PixelInternalAPI.Extensions
 		public static AnimatedSpriteRotator CreateAnimatedSpriteRotator<T>(this T npc, params SpriteRotationMap[] map) where T : NPC =>
 			CreateAnimatedSpriteRotator<T>(npc, 0, map);
 
+		// ******************************* Sprite Bill Boards **********************************
+		internal static SpriteRenderer _billboardprefab, _nonbillboardprefab;
+		/// <summary>
+		/// Returns the bill board prefab used to create sprite billboards.
+		/// </summary>
+		public static SpriteRenderer BillBoardPrefab => _billboardprefab;
+		/// <summary>
+		/// Returns the non bill board prefab used to create sprite billboards.
+		/// </summary>
+		public static SpriteRenderer NonBillBoardPrefab => _nonbillboardprefab;
 
+		/// <summary>
+		/// Creates a <see cref="SpriteRenderer"/> object with the default billboard material and a <see cref="RendererContainer"/>.
+		/// <para>The sprite will have a billboard by default.</para>
+		/// </summary>
+		/// <param name="sprite"></param>
+		/// <returns></returns>
+		public static SpriteRenderer CreateSpriteBillboard(Sprite sprite) =>
+			CreateSpriteBillboard(sprite, true);
+		/// <summary>
+		/// Creates a <see cref="SpriteRenderer"/> object with the default billboard material and a <see cref="RendererContainer"/>.
+		/// <para><paramref name="hasBillboard"/> defines whether the sprite has billboard or not (refer to <see cref="ChalkFace"/> sprite when he's in the board as an example).</para>
+		/// </summary>
+		/// <param name="sprite"></param>
+		/// <param name="hasBillboard"></param>
+		/// <returns>A <see cref="SpriteRenderer"/> instance.</returns>
+		public static SpriteRenderer CreateSpriteBillboard(Sprite sprite, bool hasBillboard)
+		{
+			var obj = Instantiate(hasBillboard ? _billboardprefab : _nonbillboardprefab);
+
+			obj.sprite = sprite;
+			if (sprite)
+				obj.name = "SpriteBillboard_" + sprite.name;
+			obj.gameObject.AddComponent<RendererContainer>().renderers = [obj];
+			return obj;
+		}
+		/// <summary>
+		/// Adds a "SpriteHolder" for the <paramref name="renderer"/>. So you can include offset or collision to the renderer without necessarily putting in the same object.
+		/// <para><paramref name="holderMask"/> is null by default (and the layer will be the billboard layer, by default). When not null, it becomes the layer of the sprite holder.</para>
+		/// <para>Note that the SpriteHolder will be the one with the <see cref="RendererContainer"/> component, removing the one from the <paramref name="renderer"/> (if it exists).</para>
+		/// <para>The <paramref name="offset"/> defined will only affect the y axis.</para>
+		/// </summary>
+		/// <param name="renderer"></param>
+		/// <param name="offset"></param>
+		/// <param name="holderMask"></param>
+		/// <returns>The <paramref name="renderer"/> itself.</returns>
+		public static SpriteRenderer AddSpriteHolder(this SpriteRenderer renderer, float offset, LayerMask? holderMask = null) =>
+			AddSpriteHolder(renderer, Vector3.up * offset, holderMask);
+		/// <summary>
+		/// Adds a "SpriteHolder" for the <paramref name="renderer"/>. So you can include offset or collision to the renderer without necessarily putting in the same object.
+		/// <para><paramref name="holderMask"/> is null by default (and the layer will be the billboard layer, by default). When not null, it becomes the layer of the sprite holder.</para>
+		/// <para>Note that the SpriteHolder will be the one with the <see cref="RendererContainer"/> component, removing the one from the <paramref name="renderer"/> (if it exists).</para>
+		/// </summary>
+		/// <param name="renderer"></param>
+		/// <param name="offset"></param>
+		/// <param name="holderMask"></param>
+		/// <returns>The <paramref name="renderer"/> itself.</returns>
+		public static SpriteRenderer AddSpriteHolder(this SpriteRenderer renderer, Vector3 offset, LayerMask? holderMask = null)
+		{
+			var parent = new GameObject("SpriteBillBoardHolder_" + renderer.name, typeof(RendererContainer));
+			renderer.transform.SetParent(parent.transform);
+			renderer.transform.localPosition = offset;
+			if (renderer.GetComponent<RendererContainer>())
+				Destroy(renderer.GetComponent<RendererContainer>()); // The parent should hold it
+
+			parent.GetComponent<RendererContainer>().renderers = [renderer];
+			parent.layer = holderMask == null ? LayerStorage.billboardLayer : holderMask.Value; // LayerMask and LayerMask? ARE DIFFERENT???
+			return renderer;
+		}
+		/// <summary>
+		/// Adds a <typeparamref name="T"/> to the <paramref name="renderer"/>.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="renderer"></param>
+		/// <param name="animator"></param>
+		/// <returns>The <paramref name="renderer"/> itself.</returns>
+		public static SpriteRenderer AddSpriteAnimator<T>(this SpriteRenderer renderer, out T animator) where T : CustomSpriteAnimator
+		{
+			animator = renderer.gameObject.AddComponent<T>();
+			animator.spriteRenderer = renderer;
+			return renderer;
+		}
 
 	}
 }

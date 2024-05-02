@@ -22,5 +22,14 @@ namespace PixelInternalAPI.Patches
 		[HarmonyPostfix] // Fix for the camera fovs
 		private static void FixAudioListener() =>
 			GlobalAudioListenerModifier.Reset();
+
+		[HarmonyPatch(typeof(BaseGameManager), "Initialize")]
+		[HarmonyPostfix]
+		private static void PostGen(BaseGameManager __instance) =>
+			ResourceManager.RaisePostGen(__instance);
+
+		[HarmonyPatch(typeof(BaseGameManager), "PrepareToLoad")]
+		private static void NextLevelCall(BaseGameManager __instance) =>
+			ResourceManager.RaiseNextLevel(__instance);
 	}
 }
