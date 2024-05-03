@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static PixelInternalAPI.ResourceManager;
 
 namespace PixelInternalAPI
 {
@@ -48,37 +49,47 @@ namespace PixelInternalAPI
 		// ************************************************ Callbacks *************************************************
 
 		/// <summary>
-		/// Adds a <paramref name="call"/> that's triggered after a level is generated/loaded.
+		/// Registers a callback after a level is generated/loaded.
 		/// </summary>
-		/// <param name="call"></param>
+		/// <param name="call">The action that is going to be taken when the callback is triggered</param>
 		public static void AddPostGenCallback(System.Action<BaseGameManager> call) =>
 			OnPostGen += (BaseGameManager) => call(BaseGameManager); // Workaround with lambda (I seriously don't wanna make those delegates public lmao)
 		/// <summary>
-		/// Adds a <paramref name="call"/> that's triggered when the level is reloaded (for either, going to the next floor or reloading it).
+		/// Registers a callback before the level starts generating/loading.
 		/// </summary>
-		/// <param name="call"></param>
-		public static void AddReloadLevelCallback(System.Action<BaseGameManager> call) =>
-			OnNextLevel += (BaseGameManager) => call(BaseGameManager);
+		/// <param name="call">The action that is going to be taken when the callback is triggered</param>
+		public static void AddGenStartCallback(System.Action<GameInitializer, LevelBuilder, BaseGameManager, SceneObject> call) =>
+		OnGeneratorStart += (a, b, c, d) => call(a, b, c, d); // Workaround with lambda (I seriously don't wanna make those delegates public lmao)
 		/// <summary>
-		/// Adds a <paramref name="call"/> that's triggered when a level begins the generation/load process.
+		/// Registers a callback when the level is reloaded (for either, going to the next floor or reloading it).
 		/// </summary>
-		/// <param name="call"></param>
-		public static void AddGeneratorStartCallback(System.Action<GameInitializer> call) =>
-			OnGameStart += (ini) => call(ini); // Workaround with lambda (I seriously don't wanna make those delegates public lmao)
+		/// <param name="call">The action that is going to be taken when the callback is triggered</param>
+		public static void AddReloadLevelCallback(System.Action<BaseGameManager, bool> call) =>
+			OnNextLevel += (BaseGameManager, next) => call(BaseGameManager, next);
 
 
 		internal delegate void PostGen(BaseGameManager sender);
 		internal static event PostGen OnPostGen;
-		internal static event PostGen OnNextLevel;
-		internal static void RaisePostGen(BaseGameManager sender) =>
+		internal static void RaisePostGen(BaseGameManager sender)
+		{
+			BasePlugin.GlobalLogger.LogInfo("Invoking Post Gen");
 			OnPostGen?.Invoke(sender);
-		internal static void RaiseNextLevel(BaseGameManager sender) =>
-			OnNextLevel?.Invoke(sender);
+		}
+		internal delegate void GenStart(GameInitializer sender, LevelBuilder lb, BaseGameManager gm, SceneObject sceneObj);
+		internal static event GenStart OnGeneratorStart;
+		internal static void RaiseGenStart(GameInitializer sender, LevelBuilder lb, BaseGameManager gm, SceneObject sceneObj)
+		{
+			BasePlugin.GlobalLogger.LogInfo("Invoking Generator Start");
+			OnGeneratorStart?.Invoke(sender, lb, gm, sceneObj);
+		}
 
-		internal delegate void GameInitialization(GameInitializer initializer);
-		internal static event GameInitialization OnGameStart;
-		internal static void RaiseGameStart(GameInitializer ga) =>
-			OnGameStart?.Invoke(ga);
+		internal delegate void ReloadLevel(BaseGameManager sender, bool goingNextLevel);
+		internal static event ReloadLevel OnNextLevel;
+		internal static void RaiseNextLevel(BaseGameManager sender, bool nextlevel)
+		{
+			BasePlugin.GlobalLogger.LogInfo("Invoking Next Level");
+			OnNextLevel?.Invoke(sender, nextlevel);
+		}
 
 		
 	}

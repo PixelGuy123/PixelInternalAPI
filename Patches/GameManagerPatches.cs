@@ -29,7 +29,21 @@ namespace PixelInternalAPI.Patches
 			ResourceManager.RaisePostGen(__instance);
 
 		[HarmonyPatch(typeof(BaseGameManager), "PrepareToLoad")]
-		private static void NextLevelCall(BaseGameManager __instance) =>
-			ResourceManager.RaiseNextLevel(__instance);
+		[HarmonyPostfix]
+		private static void NextLevelCall(BaseGameManager __instance)
+		{
+			ResourceManager.RaiseNextLevel(__instance, isNextLevel);
+			isNextLevel = false;
+		}
+		[HarmonyPatch(typeof(BaseGameManager), "LoadNextLevel")]
+		[HarmonyPrefix]
+		private static void NextLevelBooleanSet() =>
+			isNextLevel = true;
+		[HarmonyPatch(typeof(GameInitializer), "WaitForGenerator")]
+		[HarmonyPrefix]
+		private static void StartGenerator(GameInitializer __instance, LevelBuilder lb, BaseGameManager gm, SceneObject ___sceneObject) =>
+			ResourceManager.RaiseGenStart(__instance, lb, gm, ___sceneObject);
+
+		static bool isNextLevel = false;
 	}
 }

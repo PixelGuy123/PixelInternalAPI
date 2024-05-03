@@ -72,7 +72,11 @@ namespace PixelInternalAPI.Extensions
 		public static T SetAudioManagerAsPrefab<T>(this T audio) where T : AudioManager
 		{
 			if (audio.audioDevice != null && audio.audioDevice.gameObject != audio.gameObject) // Must check for the gameObject aswell to not cause unintended behaviour
-				Object.Destroy(audio.audioDevice.gameObject);
+				Destroy(audio.audioDevice.gameObject);
+
+			if (audio is PropagatedAudioManager)
+				audio.audioDevice = _disabledSource; // Add to the disabled source, so if anytime the audiomanager is enabled, it won't spam null exception
+
 			AudioManager.totalIds--;
 			if (AudioManager.totalIds < 0)
 				AudioManager.totalIds = 0;
@@ -108,6 +112,8 @@ namespace PixelInternalAPI.Extensions
 			audio.maxDistance = maxDistance;
 			return audio;
 		}
+
+		internal static AudioSource _disabledSource;
 
 		// ******************* Entity ************************
 

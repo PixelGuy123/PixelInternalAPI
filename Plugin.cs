@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Logging;
 using HarmonyLib;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
@@ -16,6 +17,8 @@ namespace PixelInternalAPI
 	{
 		private void Awake()
 		{
+			GlobalLogger = Logger;
+
 			Harmony h = new(ModInfo.PLUGIN_GUID);
 			h.PatchAll();
 
@@ -72,14 +75,34 @@ namespace PixelInternalAPI
 			}, true);
 
 			// Put the necessary callbacks for prefabs
-			ResourceManager.AddGeneratorStartCallback((_) => ResourceManager._prefabs.ForEach(x => x.SetActive(true)));
-			ResourceManager.AddPostGenCallback((_) => ResourceManager._prefabs.ForEach(x => x.SetActive(false)));
+			ResourceManager.AddGenStartCallback((_, _2, _3, sceneObj) => {
+
+				if (sceneObj != null && sceneObj)
+				{
+					Logger.LogInfo("Enabling stored prefabs");
+					ResourceManager._prefabs.ForEach(x => x.SetActive(true));
+					return;
+				}
+				Logger.LogInfo("Failed to enable prefabs (SceneObject is null)");
+				});
+
+			ResourceManager.AddPostGenCallback((_) => {
+				ResourceManager._prefabs.ForEach(x => x.SetActive(false));
+				Logger.LogInfo("Disabling prefabs");
+			});
+
+			// make a empty AudioSource
+			var source = new GameObject("EmptyAudioSourceReference").CreateAudioSource(0f, 1f);
+			source.enabled = false;
+			source.gameObject.SetAsPrefab(true);
+			ObjectCreationExtensions._disabledSource = source;
 		}
 
 		internal static List<SodaMachineCustomComponent> _machines = [];
 
 		readonly static FieldInfo sodaMachineItems = AccessTools.Field(typeof(SodaMachine), "potentialItems");
 		readonly static FieldInfo _mysteryroom_items = AccessTools.Field(typeof(MysteryRoom), "items");
+		internal static ManualLogSource GlobalLogger;
 	}
 
 	static class ModInfo

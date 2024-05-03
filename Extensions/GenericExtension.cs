@@ -359,6 +359,22 @@ namespace PixelInternalAPI.Extensions
 			rotMap_sprites.SetValue(map, sprites);
 			return map;
 		}
+		/// <summary>
+		/// Adds a room function directly into the <paramref name="asset"/>.
+		/// </summary>
+		/// <typeparam name="T">The <see cref="RoomFunction"/> to be added into the <paramref name="asset"/>.</typeparam>
+		/// <param name="asset">The <see cref="RoomAsset"/> to contain the <typeparamref name="T"/></param>
+		public static void AddRoomFunction<T>(this RoomAsset asset) where T : RoomFunction =>
+			asset.roomFunctionContainer.AddFunction(asset.roomFunctionContainer.gameObject.AddComponent<T>());
+		/// <summary>
+		/// Adds an existing <typeparamref name="T"/> object into the <paramref name="asset"/>.
+		/// </summary>
+		/// <param name="asset">The target <see cref="RoomAsset"/>.</param>
+		/// <param name="func">The <typeparamref name="T"/> object to be added.</param>
+		/// <typeparam name="T">The type of the <see cref="RoomFunction"/>.</typeparam>
+		public static void AddRoomFunction<T>(this RoomAsset asset, T func) where T : RoomFunction =>
+			asset.roomFunctionContainer.AddFunction(func);
+		
 
 		readonly static FieldInfo rotMap_sprites = AccessTools.Field(typeof(SpriteRotationMap), "spriteSheet");
 		readonly static FieldInfo animatedsprite_bypassrotation = AccessTools.Field(typeof(AnimatedSpriteRotator), "bypassRotation");
