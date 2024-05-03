@@ -90,12 +90,6 @@ namespace PixelInternalAPI
 				ResourceManager._prefabs.ForEach(x => x.SetActive(false));
 				Logger.LogInfo("Disabling prefabs");
 			});
-
-			// make a empty AudioSource
-			var source = new GameObject("EmptyAudioSourceReference").CreateAudioSource(0f, 1f);
-			source.enabled = false;
-			source.gameObject.SetAsPrefab(true);
-			ObjectCreationExtensions._disabledSource = source;
 		}
 
 		internal static List<SodaMachineCustomComponent> _machines = [];

@@ -3,7 +3,6 @@ using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using System.Reflection;
-using System.Security.Policy;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -71,11 +70,11 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <see cref="AudioManager"/> itself.</returns>
 		public static T SetAudioManagerAsPrefab<T>(this T audio) where T : AudioManager
 		{
-			if (audio.audioDevice != null && audio.audioDevice != _disabledSource && audio.audioDevice.gameObject != audio.gameObject) // Must check for the gameObject aswell to not cause unintended behaviour
+			if (audio.audioDevice != null && audio.audioDevice.gameObject != audio.gameObject) // Must check for the gameObject aswell to not cause unintended behaviour
 				Destroy(audio.audioDevice.gameObject);
 
 			if (audio is PropagatedAudioManager)
-				audio.audioDevice = _disabledSource; // Add to the disabled source, so if anytime the audiomanager is enabled, it won't spam null exception
+				audio.audioDevice = audio.gameObject.AddComponent<AudioSource>(); // Accumulate disabled audio source inside the gameObject, it won't spam null exception
 
 			AudioManager.totalIds--;
 			if (AudioManager.totalIds < 0)
@@ -112,8 +111,6 @@ namespace PixelInternalAPI.Extensions
 			audio.maxDistance = maxDistance;
 			return audio;
 		}
-
-		internal static AudioSource _disabledSource;
 
 		// ******************* Entity ************************
 
