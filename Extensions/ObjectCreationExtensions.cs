@@ -75,7 +75,7 @@ namespace PixelInternalAPI.Extensions
 
 			if (audio is PropagatedAudioManager)
 			{
-				var obj = new GameObject(audio.name + "_TemporaryPropagator").AddComponent<AudioSource>();
+				var obj = new GameObject(audio.name + "_TemporaryPropagator").AddComponent<AudioSource>(); // guarantees no null exceptions
 				obj.transform.SetParent(audio.transform);
 				obj.enabled = false;
 				audio.audioDevice = obj; // Accumulate disabled audio source inside the gameObject, it won't spam null exception
