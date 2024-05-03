@@ -71,7 +71,7 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <see cref="AudioManager"/> itself.</returns>
 		public static T SetAudioManagerAsPrefab<T>(this T audio) where T : AudioManager
 		{
-			if (audio.audioDevice != null && audio.audioDevice.gameObject != audio.gameObject) // Must check for the gameObject aswell to not cause unintended behaviour
+			if (audio.audioDevice != null && audio.audioDevice != _disabledSource && audio.audioDevice.gameObject != audio.gameObject) // Must check for the gameObject aswell to not cause unintended behaviour
 				Destroy(audio.audioDevice.gameObject);
 
 			if (audio is PropagatedAudioManager)
