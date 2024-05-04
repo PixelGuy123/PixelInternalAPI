@@ -6,7 +6,7 @@ using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
-using System.Reflection;
+// using System.Reflection;
 using UnityEngine;
 
 namespace PixelInternalAPI
@@ -59,19 +59,24 @@ namespace PixelInternalAPI
 
 			LoadingEvents.RegisterOnAssetsLoaded(() => // Make items get into random vending machines
 			{
-				GenericExtensions.FindResourceObjects<SodaMachine>().DoIf(x => ((WeightedItemObject[])sodaMachineItems.GetValue(x)).Length > 1, x =>
-				{
-					var weighteds = (WeightedItemObject[])sodaMachineItems.GetValue(x);
-					weighteds = weighteds.AddRangeToArray([.. ResourceManager._vendingMachineItems]);
-					sodaMachineItems.SetValue(x, weighteds);
+				//GenericExtensions.FindResourceObjects<SodaMachine>().DoIf(x => ((WeightedItemObject[])sodaMachineItems.GetValue(x)).Length > 1, x =>
+				//{
+				//	var weighteds = (WeightedItemObject[])sodaMachineItems.GetValue(x);
+				//	weighteds = weighteds.AddRangeToArray([.. ResourceManager._vendingMachineItems]);
+				//	sodaMachineItems.SetValue(x, weighteds);
 
-				}); // if > 1, then it must be a crazy machine
-				GenericExtensions.FindResourceObjects<MysteryRoom>().Do(x => // adding mystery items to... mystery room
-				{
-					WeightedItemObject[] items = (WeightedItemObject[])_mysteryroom_items.GetValue(x);
-					items = items.AddRangeToArray([.. ResourceManager._mysteryItems]);
-					_mysteryroom_items.SetValue(x, items);
-				});
+				//}); // if > 1, then it must be a crazy machine
+
+				GenericExtensions.FindResourceObjects<SodaMachine>().DoIf(x => x.potentialItems.Length > 1, x => x.potentialItems = x.potentialItems.AddRangeToArray([.. ResourceManager._vendingMachineItems])); // if > 1, then it must be a crazy machine
+
+				//GenericExtensions.FindResourceObjects<MysteryRoom>().Do(x => // adding mystery items to... mystery room
+				//{
+				//	WeightedItemObject[] items = (WeightedItemObject[])_mysteryroom_items.GetValue(x);
+				//	items = items.AddRangeToArray([.. ResourceManager._mysteryItems]);
+				//	_mysteryroom_items.SetValue(x, items);
+				//});
+
+				GenericExtensions.FindResourceObjects<MysteryRoom>().Do(x => x.items = x.items.AddRangeToArray([.. ResourceManager._mysteryItems]));
 			}, true);
 
 			// Put the necessary callbacks for prefabs
@@ -94,10 +99,12 @@ namespace PixelInternalAPI
 
 		internal static List<SodaMachineCustomComponent> _machines = [];
 
-		readonly static FieldInfo sodaMachineItems = AccessTools.Field(typeof(SodaMachine), "potentialItems");
-		readonly static FieldInfo _mysteryroom_items = AccessTools.Field(typeof(MysteryRoom), "items");
+		//readonly static FieldInfo sodaMachineItems = AccessTools.Field(typeof(SodaMachine), "potentialItems");
+		//readonly static FieldInfo _mysteryroom_items = AccessTools.Field(typeof(MysteryRoom), "items");
 		internal static ManualLogSource GlobalLogger;
 	}
+
+	
 
 	static class ModInfo
 	{
@@ -105,6 +112,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.0.5";
+		internal const string PLUGIN_VERSION = "1.1.0";
 	}
 }

@@ -2,7 +2,7 @@
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
-using System.Reflection;
+// using System.Reflection;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -15,10 +15,10 @@ namespace PixelInternalAPI.Extensions
 	{
 		// ****************** AudioManager *******************
 		// **************** Builder Pattern ******************
-		static readonly FieldInfo _audio_minDistance = AccessTools.Field(typeof(PropagatedAudioManager), "minDistance");
-		static readonly FieldInfo _audio_maxDistance = AccessTools.Field(typeof(PropagatedAudioManager), "maxDistance");
-		static readonly FieldInfo _audio_loopOnStart = AccessTools.Field(typeof(AudioManager), "loopOnStart");
-		static readonly FieldInfo _audio_soundObjects = AccessTools.Field(typeof(AudioManager), "soundOnStart");
+		//static readonly FieldInfo _audio_minDistance = AccessTools.Field(typeof(PropagatedAudioManager), "minDistance");
+		//static readonly FieldInfo _audio_maxDistance = AccessTools.Field(typeof(PropagatedAudioManager), "maxDistance");
+		//static readonly FieldInfo _audio_loopOnStart = AccessTools.Field(typeof(AudioManager), "loopOnStart");
+		//static readonly FieldInfo _audio_soundObjects = AccessTools.Field(typeof(AudioManager), "soundOnStart");
 		/// <summary>
 		/// Creates a <see cref="PropagatedAudioManager"/> component.
 		/// </summary>
@@ -30,8 +30,8 @@ namespace PixelInternalAPI.Extensions
 		{
 			var audio = target.AddComponent<PropagatedAudioManager>();
 
-			_audio_minDistance.SetValue(audio, minDistance);
-			_audio_maxDistance.SetValue(audio, maxDistance);
+			audio.minDistance = minDistance;//_audio_minDistance.SetValue(audio, minDistance);
+			audio.maxDistance = maxDistance;//_audio_maxDistance.SetValue(audio, maxDistance);
 
 			return audio;
 		}
@@ -97,8 +97,8 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <see cref="AudioManager"/> itself.</returns>
 		public static T AddStartingAudiosToAudioManager<T>(this T audio, bool loopOnStart, params SoundObject[] startingAudios) where T : AudioManager
 		{
-			_audio_loopOnStart.SetValue(audio, loopOnStart);
-			_audio_soundObjects.SetValue(audio, startingAudios);
+			audio.loopOnStart = loopOnStart; //_audio_loopOnStart.SetValue(audio, loopOnStart);
+			audio.soundOnStart = startingAudios; //_audio_soundObjects.SetValue(audio, startingAudios);
 
 			return audio;
 		}
@@ -119,12 +119,12 @@ namespace PixelInternalAPI.Extensions
 
 		// ******************* Entity ************************
 
-		static readonly FieldInfo _entity_rendererBase = AccessTools.Field(typeof(Entity), "rendererBase");
-		static readonly FieldInfo _entity_collider = AccessTools.Field(typeof(Entity), "collider");
-		static readonly FieldInfo _entity_trigger = AccessTools.Field(typeof(Entity), "trigger");
-		static readonly FieldInfo _entity_activity = AccessTools.Field(typeof(Entity), "externalActivity");
-		static readonly FieldInfo _entity_etrigger = AccessTools.Field(typeof(Entity), "iEntityTrigger");
-		static readonly FieldInfo _entity_CollisionMask = AccessTools.Field(typeof(Entity), "collisionLayerMask");
+		//static readonly FieldInfo _entity_rendererBase = AccessTools.Field(typeof(Entity), "rendererBase");
+		//static readonly FieldInfo _entity_collider = AccessTools.Field(typeof(Entity), "collider");
+		//static readonly FieldInfo _entity_trigger = AccessTools.Field(typeof(Entity), "trigger");
+		//static readonly FieldInfo _entity_activity = AccessTools.Field(typeof(Entity), "externalActivity");
+		//static readonly FieldInfo _entity_etrigger = AccessTools.Field(typeof(Entity), "iEntityTrigger");
+		//static readonly FieldInfo _entity_CollisionMask = AccessTools.Field(typeof(Entity), "collisionLayerMask");
 		/// <summary>
 		/// Creates an <see cref="Entity"/> component to an object. Warning: Adding an <see cref="Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs.
 		/// </summary>
@@ -140,15 +140,15 @@ namespace PixelInternalAPI.Extensions
 			var e = target.AddComponent<Entity>();
 			e.SetActive(false);
 			target.layer = mask;
-			_entity_rendererBase.SetValue(e, rendererBase);
-			_entity_collider.SetValue(e, collider);
-			_entity_activity.SetValue(e, target.AddComponent<ActivityModifier>());
-			_entity_trigger.SetValue(e, triggerCollider);
+			e.rendererBase = rendererBase; //_entity_rendererBase.SetValue(e, rendererBase);
+			e.collider = collider;//_entity_collider.SetValue(e, collider);
+			e.externalActivity = target.AddComponent<ActivityModifier>();//_entity_activity.SetValue(e, target.AddComponent<ActivityModifier>());
+			e.trigger = triggerCollider;//_entity_trigger.SetValue(e, triggerCollider);
 			if (triggers != null)
-				_entity_etrigger.SetValue(e, triggers);
+				e.iEntityTrigger = triggers;//	_entity_etrigger.SetValue(e, triggers);
 
 
-			return e;
+				return e;
 		}
 		/// <summary>
 		/// Creates an <see cref="Entity"/> component to an object. Warning: Adding an <see cref="Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs. The default collider added is the <see cref="CapsuleCollider"/>
@@ -202,18 +202,18 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <paramref name="entity"/> itself</returns>
 		public static Entity SetEntityCollisionLayerMask(this Entity entity, LayerMask layer)
 		{
-			_entity_CollisionMask.SetValue(entity, layer);
+			entity.collisionLayerMask = layer; // _entity_CollisionMask.SetValue(entity, layer);
 			return entity;
 		}
 
 		// ************* Object Placer **************
-		readonly static FieldInfo _objplace_prefab = AccessTools.Field(typeof(ObjectPlacer), "prefab");
-		readonly static FieldInfo _objplace_min = AccessTools.Field(typeof(ObjectPlacer), "min");
-		readonly static FieldInfo _objplace_max = AccessTools.Field(typeof(ObjectPlacer), "max");
-		readonly static FieldInfo _objplace_usewalldir = AccessTools.Field(typeof(ObjectPlacer), "useWallDir");
-		readonly static FieldInfo _objplace_useopendir = AccessTools.Field(typeof(ObjectPlacer), "useOpenDir");
-		readonly static FieldInfo _objplace_includeOpen = AccessTools.Field(typeof(ObjectPlacer), "includeOpen");
-		readonly static FieldInfo _genericHall_objectPlacer = AccessTools.Field(typeof(GenericHallBuilder), "objectPlacer");
+		//readonly static FieldInfo _objplace_prefab = AccessTools.Field(typeof(ObjectPlacer), "prefab");
+		//readonly static FieldInfo _objplace_min = AccessTools.Field(typeof(ObjectPlacer), "min");
+		//readonly static FieldInfo _objplace_max = AccessTools.Field(typeof(ObjectPlacer), "max");
+		//readonly static FieldInfo _objplace_usewalldir = AccessTools.Field(typeof(ObjectPlacer), "useWallDir");
+		//readonly static FieldInfo _objplace_useopendir = AccessTools.Field(typeof(ObjectPlacer), "useOpenDir");
+		//readonly static FieldInfo _objplace_includeOpen = AccessTools.Field(typeof(ObjectPlacer), "includeOpen");
+		//readonly static FieldInfo _genericHall_objectPlacer = AccessTools.Field(typeof(GenericHallBuilder), "objectPlacer");
 		/// <summary>
 		/// Creates a new <see cref="ObjectPlacer"/> instance. The <paramref name="requiredCoverages"/> are the cell coverages the <see cref="ObjectPlacer"/> needs to properly place an object. The <paramref name="eligibleShapes"/> are the shapes required by the <see cref="ObjectPlacer"/>.
 		/// <para>Note: if the <paramref name="prefab"/> doesn't contain an <see cref="EnvironmentObject"/>, it'll include one automatically.</para>
@@ -231,8 +231,8 @@ namespace PixelInternalAPI.Extensions
 			};
 			if (!prefab.GetComponent<EnvironmentObject>())
 				prefab.AddComponent<EnvironmentObject>(); // This is required for the ObjectPlacer
-			
-			_objplace_prefab.SetValue(placer, prefab);
+
+			placer.prefab = prefab; //_objplace_prefab.SetValue(placer, prefab);
 
 			return placer;
 		}
@@ -245,8 +245,8 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <paramref name="pl"/> itself.</returns>
 		public static ObjectPlacer SetMinAndMaxObjects(this ObjectPlacer pl, int min, int max) 
 		{
-			_objplace_min.SetValue(pl, min);
-			_objplace_max.SetValue(pl, max);
+			pl.min = min; //_objplace_min.SetValue(pl, min);
+			pl.max = max; //_objplace_max.SetValue(pl, max);
 			return pl;		
 		}
 		/// <summary>
@@ -259,9 +259,9 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <paramref name="pl"/> itself.</returns>
 		public static ObjectPlacer SetTilePreferences(this ObjectPlacer pl, bool useWallDir, bool useOpenDir, bool includeOpenTiles)
 		{
-			_objplace_useopendir.SetValue(pl, useOpenDir);
-			_objplace_usewalldir.SetValue(pl, useWallDir);
-			_objplace_includeOpen.SetValue(pl, includeOpenTiles);
+			pl.useOpenDir = useOpenDir; //_objplace_useopendir.SetValue(pl, useOpenDir);
+			pl.useWallDir = useWallDir; //_objplace_usewalldir.SetValue(pl, useWallDir);
+			pl.includeOpen = includeOpenTiles; //_objplace_includeOpen.SetValue(pl, includeOpenTiles);
 			return pl;
 		}
 		/// <summary>
@@ -272,7 +272,7 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <paramref name="b"/> itself.</returns>
 		public static GenericHallBuilder SetObjectPlacer(this GenericHallBuilder b, ObjectPlacer placer)
 		{
-			_genericHall_objectPlacer.SetValue(b, placer);
+			b.objectPlacer = placer; //_genericHall_objectPlacer.SetValue(b, placer);
 			return b;
 		}
 
@@ -280,10 +280,10 @@ namespace PixelInternalAPI.Extensions
 
 		internal static SodaMachine prefab;
 
-		readonly static FieldInfo _sodaMach_meshRenderer = AccessTools.Field(typeof(SodaMachine), "meshRenderer");
-		readonly static FieldInfo _sodaMach_outofstockmat = AccessTools.Field(typeof(SodaMachine), "outOfStockMat");
-		readonly static FieldInfo _sodaMach_potentialitems = AccessTools.Field(typeof(SodaMachine), "potentialItems");
-		readonly static FieldInfo _sodaMach_usesleft = AccessTools.Field(typeof(SodaMachine), "usesLeft");
+		//readonly static FieldInfo _sodaMach_meshRenderer = AccessTools.Field(typeof(SodaMachine), "meshRenderer");
+		//readonly static FieldInfo _sodaMach_outofstockmat = AccessTools.Field(typeof(SodaMachine), "outOfStockMat");
+		//readonly static FieldInfo _sodaMach_potentialitems = AccessTools.Field(typeof(SodaMachine), "potentialItems");
+		//readonly static FieldInfo _sodaMach_usesleft = AccessTools.Field(typeof(SodaMachine), "usesLeft");
 
 		/// <summary>
 		/// Creates a new <see cref="SodaMachine"/> instance. <paramref name="sodaTex"/> and <paramref name="sodaOutTex"/> sets the textures for new <see cref="SodaMachine"/>.
@@ -302,13 +302,12 @@ namespace PixelInternalAPI.Extensions
 				machine.gameObject.SetActive(false);
 			}
 
-			var renderer = (MeshRenderer)_sodaMach_meshRenderer.GetValue(machine);
+			var renderer = machine.meshRenderer; //(MeshRenderer)_sodaMach_meshRenderer.GetValue(machine);
 			renderer.materials[1].mainTexture = sodaTex;
-			var mat = new Material((Material)_sodaMach_outofstockmat.GetValue(machine))
+			machine.outOfStockMat = new Material(machine.outOfStockMat) //new Material((Material)_sodaMach_outofstockmat.GetValue(machine))
 			{
 				mainTexture = sodaOutTex
-			};
-			_sodaMach_outofstockmat.SetValue(machine, mat);
+			}; ; //_sodaMach_outofstockmat.SetValue(machine, mat);
 
 			BasePlugin._machines.Add(machine.GetComponent<SodaMachineCustomComponent>());
 
@@ -322,7 +321,7 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <paramref name="mach"/> itself.</returns>
 		public static SodaMachine SetPotentialItems(this SodaMachine mach, params WeightedItemObject[] potentialItems)
 		{
-			_sodaMach_potentialitems.SetValue(mach, potentialItems);
+			mach.potentialItems = potentialItems; //_sodaMach_potentialitems.SetValue(mach, potentialItems);
 			return mach;
 		}
 		/// <summary>
@@ -334,7 +333,7 @@ namespace PixelInternalAPI.Extensions
 		public static SodaMachine SetUses(this SodaMachine mach, int usesLeft)
 		{
 			mach.GetComponent<SodaMachineCustomComponent>().infiniteUses = usesLeft < 0;
-			_sodaMach_usesleft.SetValue(mach, usesLeft <= 0 ? 99 : usesLeft);
+			mach.usesLeft = usesLeft; //_sodaMach_usesleft.SetValue(mach, usesLeft <= 0 ? 99 : usesLeft);
 
 			return mach;
 		}
@@ -346,9 +345,8 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <paramref name="mach"/> itself.</returns>
 		public static SodaMachine AddNewPotentialItems(this SodaMachine mach,params WeightedItemObject[] potentialItems)
 		{
-			var itms = (WeightedItemObject[])_sodaMach_potentialitems.GetValue(mach);
-			itms = itms.AddRangeToArray(potentialItems);
-			mach.SetPotentialItems(itms);
+			//(WeightedItemObject[])_sodaMach_potentialitems.GetValue(mach);
+			mach.SetPotentialItems(mach.potentialItems.AddRangeToArray(potentialItems));
 			return mach;
 		}
 		/// <summary>
@@ -378,8 +376,8 @@ namespace PixelInternalAPI.Extensions
 		}
 
 		// **************** Animated Sprite Rotator ****************
-		readonly static FieldInfo _animatedSpriteRotator_renderer = AccessTools.Field(typeof(AnimatedSpriteRotator), "renderer");
-		readonly static FieldInfo _animatedSpriteRotator_spriteMap = AccessTools.Field(typeof(AnimatedSpriteRotator), "spriteMap");
+		//readonly static FieldInfo _animatedSpriteRotator_renderer = AccessTools.Field(typeof(AnimatedSpriteRotator), "renderer");
+		//readonly static FieldInfo _animatedSpriteRotator_spriteMap = AccessTools.Field(typeof(AnimatedSpriteRotator), "spriteMap");
 
 		/// <summary>
 		/// Creates a <see cref="AnimatedSpriteRotator"/> component for the <paramref name="npc"/>.
@@ -393,8 +391,8 @@ namespace PixelInternalAPI.Extensions
 		public static AnimatedSpriteRotator CreateAnimatedSpriteRotator<T>(this T npc, int rendererIdx, params SpriteRotationMap[] map) where T : NPC
 		{
 			var animator = npc.gameObject.AddComponent<AnimatedSpriteRotator>();
-			_animatedSpriteRotator_renderer.SetValue(animator, npc.spriteRenderer[rendererIdx]);
-			_animatedSpriteRotator_spriteMap.SetValue(animator, map);
+			animator.renderer = npc.spriteRenderer[rendererIdx]; //_animatedSpriteRotator_renderer.SetValue(animator, npc.spriteRenderer[rendererIdx]);
+			animator.spriteMap = map; //_animatedSpriteRotator_spriteMap.SetValue(animator, map);
 			return animator;
 		}
 

@@ -9,14 +9,18 @@ namespace PixelInternalAPI.Components
     {
         private void LateUpdate()
         {
-            if (mainCam != null)
-            {
-                transform.LookAt(mainCam.transform.position + Vector3.up * (transform.position.y - mainCam.transform.position.y));
-            }
-            else if (Camera.main != null)
-                mainCam = Camera.main;
+			if (mainCam != null)
+				transform.forward = !invertFace ? mainCam.transform.forward : -mainCam.transform.forward;
+			else if (Camera.main != null)
+				mainCam = Camera.main;
 
         }
         Camera mainCam;
+
+		/// <summary>
+		/// When set to true, the object will rotate the opposite direction to the player.
+		/// </summary>
+		[SerializeField]
+		public bool invertFace = false;
     }
 }

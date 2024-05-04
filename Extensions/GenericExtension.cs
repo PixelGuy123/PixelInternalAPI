@@ -4,7 +4,7 @@ using HarmonyLib;
 using System;
 using System.Linq;
 using System.Reflection.Emit;
-using System.Reflection;
+//using System.Reflection;
 
 namespace PixelInternalAPI.Extensions
 {
@@ -322,10 +322,10 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The amount of empty slots in the inventory.</returns>
 		public static int SlotsAvailable(this ItemManager man)
 		{
-			bool[] lockeds = (bool[])_itm_slotLocked.GetValue(man);
+			//bool[] lockeds = (bool[])_itm_slotLocked.GetValue(man);
 			int a = 0;
 			for (int i = 0; i <= man.maxItem; i++)
-				if (man.items[i].itemType == Items.None && !lockeds[i])
+				if (man.items[i].itemType == Items.None && !man.slotLocked[i])//!lockeds[i])
 					a++;
 			
 			return a;
@@ -337,7 +337,7 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="idx"></param>
 		/// <returns>If true, the slot is locked, otherwise false.</returns>
 		public static bool IsSlotLocked(this ItemManager man, int idx) =>
-			((bool[])_itm_slotLocked.GetValue(man))[idx];
+			man.slotLocked[idx]; //((bool[])_itm_slotLocked.GetValue(man))[idx];
 		/// <summary>
 		/// A simple method to set the field <c>bypassRotation</c> from the <see cref="AnimatedSpriteRotator"/>.
 		/// <para>If <paramref name="bypass"/> is true. The <see cref="AnimatedSpriteRotator"/> will begin using the <see cref="AnimatedSpriteRotator.targetSprite"/> instead of the map.</para>
@@ -345,7 +345,7 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="rotator"></param>
 		/// <param name="bypass"></param>
 		public static void BypassRotation(this AnimatedSpriteRotator rotator, bool bypass) =>
-			animatedsprite_bypassrotation.SetValue(rotator, bypass);
+			rotator.bypassRotation = bypass; //animatedsprite_bypassrotation.SetValue(rotator, bypass);
 
 		/// <summary>
 		/// Creates an instance of <see cref="SpriteRotationMap"/>.
@@ -356,7 +356,7 @@ namespace PixelInternalAPI.Extensions
 		public static SpriteRotationMap CreateRotationMap(int angleCount, params Sprite[] sprites)
 		{
 			var map = new SpriteRotationMap() { angleCount = angleCount};
-			rotMap_sprites.SetValue(map, sprites);
+			map.spriteSheet = sprites; // rotMap_sprites.SetValue(map, sprites);
 			return map;
 		}
 		/// <summary>
@@ -364,8 +364,11 @@ namespace PixelInternalAPI.Extensions
 		/// </summary>
 		/// <typeparam name="T">The <see cref="RoomFunction"/> to be added into the <paramref name="asset"/>.</typeparam>
 		/// <param name="asset">The <see cref="RoomAsset"/> to contain the <typeparamref name="T"/></param>
-		public static void AddRoomFunction<T>(this RoomAsset asset) where T : RoomFunction =>
-			asset.roomFunctionContainer.AddFunction(asset.roomFunctionContainer.gameObject.AddComponent<T>());
+		public static void AddRoomFunction<T>(this RoomAsset asset) where T : RoomFunction
+		{
+			if (!asset.roomFunctionContainer.GetComponent<T>())
+				asset.roomFunctionContainer.AddFunction(asset.roomFunctionContainer.gameObject.AddComponent<T>());
+		}
 		/// <summary>
 		/// Adds an existing <typeparamref name="T"/> object into the <paramref name="asset"/>.
 		/// </summary>
@@ -376,8 +379,8 @@ namespace PixelInternalAPI.Extensions
 			asset.roomFunctionContainer.AddFunction(func);
 		
 
-		readonly static FieldInfo rotMap_sprites = AccessTools.Field(typeof(SpriteRotationMap), "spriteSheet");
-		readonly static FieldInfo animatedsprite_bypassrotation = AccessTools.Field(typeof(AnimatedSpriteRotator), "bypassRotation");
-		readonly static FieldInfo _itm_slotLocked = AccessTools.Field(typeof(ItemManager), "slotLocked");
+		//readonly static FieldInfo rotMap_sprites = AccessTools.Field(typeof(SpriteRotationMap), "spriteSheet");
+		//readonly static FieldInfo animatedsprite_bypassrotation = AccessTools.Field(typeof(AnimatedSpriteRotator), "bypassRotation");
+		//readonly static FieldInfo _itm_slotLocked = AccessTools.Field(typeof(ItemManager), "slotLocked");
 	}
 }
