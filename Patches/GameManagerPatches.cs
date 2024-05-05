@@ -28,11 +28,11 @@ namespace PixelInternalAPI.Patches
 		private static void PostGen(BaseGameManager __instance) =>
 			ResourceManager.RaisePostGen(__instance);
 
-		[HarmonyPatch(typeof(BaseGameManager), "PrepareToLoad")]
+		[HarmonyPatch(typeof(CoreGameManager), "PrepareForReload")]
 		[HarmonyPostfix]
-		private static void NextLevelCall(BaseGameManager __instance)
+		private static void NextLevelCall()
 		{
-			ResourceManager.RaiseNextLevel(__instance, isNextLevel);
+			ResourceManager.RaiseNextLevel(Singleton<BaseGameManager>.Instance, isNextLevel);
 			isNextLevel = false;
 		}
 		[HarmonyPatch(typeof(BaseGameManager), "LoadNextLevel")]

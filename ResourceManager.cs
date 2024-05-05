@@ -87,7 +87,7 @@ namespace PixelInternalAPI
 		internal static event ReloadLevel OnNextLevel;
 		internal static void RaiseNextLevel(BaseGameManager sender, bool nextlevel)
 		{
-			BasePlugin.GlobalLogger.LogInfo("Invoking Next Level");
+			BasePlugin.GlobalLogger.LogInfo($"Invoking Next Level (Next Level: {nextlevel})");
 			OnNextLevel?.Invoke(sender, nextlevel);
 		}
 
