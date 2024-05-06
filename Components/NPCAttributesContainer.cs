@@ -1,4 +1,4 @@
-﻿using PixelInternalAPI.Classes;
+﻿using MTM101BaldAPI.Components;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,19 +13,19 @@ namespace PixelInternalAPI.Components
 		float originalDistance = 0f;
 		Looker looker;
 
-		internal List<BaseModifier> lookermods = [];
+		internal List<ValueModifier> lookermods = [];
 		/// <summary>
 		/// Checks if the <paramref name="modifier"/> exists in the looker mods.
 		/// </summary>
 		/// <param name="modifier"></param>
 		/// <returns>true if <paramref name="modifier"/> exists inside the looker mods, otherwise false.</returns>
-		public bool HasLookerMod(BaseModifier modifier) => lookermods.Contains(modifier);
+		public bool HasLookerMod(ValueModifier modifier) => lookermods.Contains(modifier);
 
 		/// <summary>
 		/// Adds a <paramref name="mod"/> to the looker mods.
 		/// </summary>
 		/// <param name="mod"></param>
-		public void AddLookerMod(BaseModifier mod)
+		public void AddLookerMod(ValueModifier mod)
 		{
 			lookermods.Add(mod);
 			UpdateLooker();
@@ -34,7 +34,7 @@ namespace PixelInternalAPI.Components
 		/// Removes a <paramref name="mod"/> to the looker mods.
 		/// </summary>
 		/// <param name="mod"></param>
-		public void RemoveLookerMod(BaseModifier mod)
+		public void RemoveLookerMod(ValueModifier mod)
 		{
 			lookermods.Remove(mod);
 			UpdateLooker();
@@ -43,7 +43,7 @@ namespace PixelInternalAPI.Components
 		void UpdateLooker()
 		{
 			float val = originalDistance;
-			lookermods.ForEach(x => val *= x.Mod);
+			lookermods.ForEach(x => { val *= x.multiplier; val += x.addend; });
 			looker.distance = Mathf.Max(0f, val);
 		}
 

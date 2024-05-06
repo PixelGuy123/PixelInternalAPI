@@ -1,4 +1,5 @@
-﻿using PixelInternalAPI.Classes;
+﻿using MTM101BaldAPI.Components;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace PixelInternalAPI.Components
 			float fov = defaultFov;
 
 			for (int i = 0; i < fovModifiers.Count; i++)
-					fov += fovModifiers[i].Mod;
+					fov += fovModifiers[i].addend;
 
 			cam.camCom.fieldOfView = Mathf.Clamp(fov, minFov, maxFov);
 		}
@@ -44,14 +45,14 @@ namespace PixelInternalAPI.Components
 		/// Add a fov modifier.
 		/// </summary>
 		/// <param name="mod"></param>
-		public void AddModifier(BaseModifier mod) =>
+		public void AddModifier(ValueModifier mod) =>
 			fovModifiers.Add(mod);
 		
 		/// <summary>
 		/// Remove a fov modifier.
 		/// </summary>
 		/// <param name="mod"></param>
-		public void RemoveModifier(BaseModifier mod) =>
+		public void RemoveModifier(ValueModifier mod) =>
 			fovModifiers.Remove(mod);
 		
 
@@ -62,7 +63,7 @@ namespace PixelInternalAPI.Components
 		// ******** IEnumerators *********
 
 		/// <summary>
-		/// Initiates a Reverse Slide animation (basically goes from <c><paramref name="instance"/>.Mod + <paramref name="offset"/></c> to 0).
+		/// Initiates a Reverse Slide animation (basically goes from <c><paramref name="instance"/>.addend + <paramref name="offset"/></c> to 0).
 		/// <para><paramref name="smoothness"/> define the smoothness of the animation.</para>
 		/// <para><paramref name="referenceFrameRate"/> is the frame rate used as reference (since <see cref="Time.deltaTime"/> is used).</para>
 		/// </summary>
@@ -72,10 +73,10 @@ namespace PixelInternalAPI.Components
 		/// <param name="smoothness"></param>
 		/// <param name="referenceFrameRate"></param>
 		/// <returns>A <see cref="Coroutine"/> of the animation</returns>
-		public Coroutine ReverseSlideFOVAnimation<T>(T instance, float offset, float smoothness = 2f, float referenceFrameRate = 30f) where T : BaseModifier =>
+		public Coroutine ReverseSlideFOVAnimation<T>(T instance, float offset, float smoothness = 2f, float referenceFrameRate = 30f) where T : ValueModifier =>
 			StartCoroutine(InternalReverseSlideFOVAnimation(instance, offset, smoothness, referenceFrameRate));
 
-		IEnumerator InternalReverseSlideFOVAnimation<T>(T instance, float offset, float smoothness = 2f, float referenceFrameRate = 30f) where T : BaseModifier
+		IEnumerator InternalReverseSlideFOVAnimation<T>(T instance, float offset, float smoothness = 2f, float referenceFrameRate = 30f) where T : ValueModifier
 		{
 			if (smoothness <= 1f)
 			{
@@ -83,20 +84,20 @@ namespace PixelInternalAPI.Components
 				yield break;
 			}
 
-			instance.Mod += offset;
-			bool isPositive = instance.Mod >= 0f;
+			instance.addend += offset;
+			bool isPositive = instance.addend >= 0f;
 			if (!fovModifiers.Contains(instance))
 				AddModifier(instance);
 
-			while (!instance.Mod.CompareFloats(0f))
+			while (!instance.addend.CompareFloats(0f))
 			{
-				instance.Mod += -instance.Mod / smoothness * referenceFrameRate * Time.deltaTime;
+				instance.addend += -instance.addend / smoothness * referenceFrameRate * Time.deltaTime;
 				if (isPositive)
 				{
-					if (instance.Mod < 0f)
+					if (instance.addend < 0f)
 						yield break;
 				}
-				else if (instance.Mod > 0f)
+				else if (instance.addend > 0f)
 					yield break;
 
 				yield return null;
@@ -107,7 +108,7 @@ namespace PixelInternalAPI.Components
 			yield break;
 		}
 		/// <summary>
-		/// A basic slide animation to a selected <paramref name="offset"/> from the <c><paramref name="instance"/>.Mod</c>
+		/// A basic slide animation to a selected <paramref name="offset"/> from the <c><paramref name="instance"/>.addend</c>
 		/// <para><paramref name="smoothness"/> define the smoothness of the animation.</para>
 		/// <para><paramref name="referenceFrameRate"/> is the frame rate used as reference (since <see cref="Time.deltaTime"/> is used).</para>
 		/// </summary>
@@ -117,44 +118,44 @@ namespace PixelInternalAPI.Components
 		/// <param name="smoothness"></param>
 		/// <param name="referenceFrameRate"></param>
 		/// <returns>A <see cref="Coroutine"/> of the animation</returns>
-		public Coroutine SlideFOVAnimation<T>(T instance, float offset, float smoothness = 2f, float referenceFrameRate = 30f) where T : BaseModifier =>
+		public Coroutine SlideFOVAnimation<T>(T instance, float offset, float smoothness = 2f, float referenceFrameRate = 30f) where T : ValueModifier =>
 			StartCoroutine(InternalSlideFOVAnimation(instance, offset, smoothness, referenceFrameRate));
 
-		IEnumerator InternalSlideFOVAnimation<T>(T instance, float offset, float smoothness = 2f, float referenceFrameRate = 30f) where T : BaseModifier
+		IEnumerator InternalSlideFOVAnimation<T>(T instance, float offset, float smoothness = 2f, float referenceFrameRate = 30f) where T : ValueModifier
 		{
 			if (smoothness <= 1f)
 			{
 				Debug.LogWarning("Smoothness is less than or equal to 1f");
 				yield break;
 			}
-			float off = Mathf.Clamp(instance.Mod + offset, -minFov, maxFov);
-			bool isPositive = off <= instance.Mod;
+			float off = Mathf.Clamp(instance.addend + offset, -minFov, maxFov);
+			bool isPositive = off <= instance.addend;
 
 			if (!fovModifiers.Contains(instance))
 				AddModifier(instance);
 
-			while (!instance.Mod.CompareFloats(off))
+			while (!instance.addend.CompareFloats(off))
 			{
-				instance.Mod += (off - instance.Mod) / smoothness * referenceFrameRate * Time.deltaTime;
+				instance.addend += (off - instance.addend) / smoothness * referenceFrameRate * Time.deltaTime;
 
 				if (isPositive)
 				{
-					if (instance.Mod < off)
+					if (instance.addend < off)
 						yield break;
 				}
-				else if (instance.Mod > off)
+				else if (instance.addend > off)
 					yield break;
 
 
 				yield return null;
 			}
 
-			instance.Mod = off;
+			instance.addend = off;
 
 			yield break;
 		}
 		/// <summary>
-		/// A slide animation that goes from <c><paramref name="instance"/>.Mod</c> to 0.
+		/// A slide animation that goes from <c><paramref name="instance"/>.addend</c> to 0.
 		/// <para><paramref name="smoothness"/> define the smoothness of the animation.</para>
 		/// <para><paramref name="referenceFrameRate"/> is the frame rate used as reference (since <see cref="Time.deltaTime"/> is used).</para>
 		/// </summary>
@@ -163,9 +164,9 @@ namespace PixelInternalAPI.Components
 		/// <param name="smoothness"></param>
 		/// <param name="referenceFrameRate"></param>
 		/// <returns><see cref="Coroutine"/></returns>
-		public Coroutine ResetSlideFOVAnimation<T>(T instance, float smoothness = 2f, float referenceFrameRate = 30f) where T : BaseModifier =>
+		public Coroutine ResetSlideFOVAnimation<T>(T instance, float smoothness = 2f, float referenceFrameRate = 30f) where T : ValueModifier =>
 			StartCoroutine(InternalResetSlideFOVAnimation(instance, smoothness, referenceFrameRate));
-		IEnumerator InternalResetSlideFOVAnimation<T>(T instance, float smoothness = 2f, float referenceFrameRate = 30f) where T : BaseModifier
+		IEnumerator InternalResetSlideFOVAnimation<T>(T instance, float smoothness = 2f, float referenceFrameRate = 30f) where T : ValueModifier
 		{
 			if (smoothness <= 1f)
 			{
@@ -173,21 +174,21 @@ namespace PixelInternalAPI.Components
 				yield break;
 			}
 
-			bool isPositive = instance.Mod >= 0f;
+			bool isPositive = instance.addend >= 0f;
 
 			if (!fovModifiers.Contains(instance))
 				AddModifier(instance);
 
-			while (!instance.Mod.CompareFloats(0f))
+			while (!instance.addend.CompareFloats(0f))
 			{
-				instance.Mod += -instance.Mod / smoothness * referenceFrameRate * Time.deltaTime;
+				instance.addend += -instance.addend / smoothness * referenceFrameRate * Time.deltaTime;
 
 				if (isPositive)
 				{
-					if (instance.Mod < 0f)
+					if (instance.addend < 0f)
 						yield break;
 				}
-				else if (instance.Mod > 0f)
+				else if (instance.addend > 0f)
 					yield break;
 
 
@@ -215,9 +216,9 @@ namespace PixelInternalAPI.Components
 		/// <param name="shakePerFrames"></param>
 		/// <param name="referenceFrameRate"></param>
 		/// <returns><see cref="Coroutine"/></returns>
-		public Coroutine ShakeFOVAnimation<T>(T instance, float smoothness = 1f, float intensity = 1f, float shakeCooldown = 1f, int shakePerFrames = 2, float referenceFrameRate = 30f) where T : BaseModifier =>
+		public Coroutine ShakeFOVAnimation<T>(T instance, float smoothness = 1f, float intensity = 1f, float shakeCooldown = 1f, int shakePerFrames = 2, float referenceFrameRate = 30f) where T : ValueModifier =>
 			StartCoroutine(InternalShakeFOVAnimation(instance, smoothness, intensity, shakeCooldown, shakePerFrames, referenceFrameRate));
-		IEnumerator InternalShakeFOVAnimation<T>(T instance, float smoothness = 1f, float intensity = 1f, float shakeCooldown = 1f, int shakePerFrames = 2, float referenceFrameRate = 30f) where T : BaseModifier
+		IEnumerator InternalShakeFOVAnimation<T>(T instance, float smoothness = 1f, float intensity = 1f, float shakeCooldown = 1f, int shakePerFrames = 2, float referenceFrameRate = 30f) where T : ValueModifier
 		{
 			if (smoothness < 1f)
 			{
@@ -245,7 +246,7 @@ namespace PixelInternalAPI.Components
 
 			while (shakeCooldown > 0f)
 			{
-				instance.Mod += (offset - instance.Mod) / smoothness * referenceFrameRate * Time.deltaTime;
+				instance.addend += (offset - instance.addend) / smoothness * referenceFrameRate * Time.deltaTime;
 				shakeCooldown -= Time.deltaTime;
 				if (--shakePerFrames < 0f)
 				{
@@ -266,7 +267,7 @@ namespace PixelInternalAPI.Components
 
 		private float defaultFov;
 
-		readonly List<BaseModifier> fovModifiers = [];
+		readonly List<ValueModifier> fovModifiers = [];
 
 		const float minFov = 20f, maxFov = 125f;
 	}

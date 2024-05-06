@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using PixelInternalAPI.Classes;
-using PixelInternalAPI.Components;
+using PixelInternalAPI.Extensions;
 
 namespace PixelInternalAPI.Patches
 {
@@ -12,10 +12,7 @@ namespace PixelInternalAPI.Patches
 		private static void ResetCameraFovs(CoreGameManager __instance, ref GameCamera[] ___cameras, ref PlayerManager[] ___players)
 		{
 			for (int i = 0; i < __instance.setPlayers; i++)
-			{
-				___cameras[i].GetComponent<CustomPlayerCameraComponent>()?.ResetFov();
-				___players[i].gameObject.AddComponent<PlayerAttributesComponent>();
-			}
+				___cameras[i].GetCustomCam().ResetFov();
 		}
 
 		[HarmonyPatch(typeof(BaseGameManager), "BeginPlay")]

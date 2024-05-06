@@ -4,6 +4,8 @@ using HarmonyLib;
 using System;
 using System.Linq;
 using System.Reflection.Emit;
+using MTM101BaldAPI;
+using PixelInternalAPI.Components;
 //using System.Reflection;
 
 namespace PixelInternalAPI.Extensions
@@ -195,19 +197,7 @@ namespace PixelInternalAPI.Extensions
 			return cs;
 		}
 		/// <summary>
-		/// Transforms the <paramref name="obj"/> into a prefab by putting it in the DontDestroyOnLoad scene and disabling it (if <paramref name="keepActive"/> is false).
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="keepActive"></param>
-		/// <returns>The <paramref name="obj"/> itself.</returns>
-		public static GameObject SetAsPrefab(this GameObject obj, bool keepActive = false) 
-		{
-			obj.SetActive(keepActive);
-			UnityEngine.Object.DontDestroyOnLoad(obj);
-			return obj;
-		}
-		/// <summary>
-		/// Instantiate an <paramref name="obj"/> but maintaning the same name and put in the DontDestroyOnLoad scene.
+		/// Instantiate an <paramref name="obj"/> but maintaning the same name and put in the HideAndDontSave scene.
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <typeparam name="T"></typeparam>
@@ -215,7 +205,7 @@ namespace PixelInternalAPI.Extensions
 		public static T DuplicatePrefab<T>(this T obj) where T : Component
 		{
 			var o = UnityEngine.Object.Instantiate(obj);
-			UnityEngine.Object.DontDestroyOnLoad(o.gameObject);
+			o.gameObject.ConvertToPrefab(o.gameObject.activeSelf);
 			o.name = obj.name;
 			return o;
 		}
@@ -227,7 +217,7 @@ namespace PixelInternalAPI.Extensions
 		public static GameObject DuplicatePrefab(this GameObject obj)
 		{
 			var o = UnityEngine.Object.Instantiate(obj);
-			UnityEngine.Object.DontDestroyOnLoad(o.gameObject);
+			o.ConvertToPrefab(o.activeSelf);
 			o.name = obj.name;
 			return o;
 		}
@@ -355,8 +345,11 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>An instance of <see cref="SpriteRotationMap"/>.</returns>
 		public static SpriteRotationMap CreateRotationMap(int angleCount, params Sprite[] sprites)
 		{
-			var map = new SpriteRotationMap() { angleCount = angleCount};
-			map.spriteSheet = sprites; // rotMap_sprites.SetValue(map, sprites);
+			var map = new SpriteRotationMap
+			{
+				angleCount = angleCount,
+				spriteSheet = sprites // rotMap_sprites.SetValue(map, sprites);
+			};
 			return map;
 		}
 		/// <summary>
@@ -377,7 +370,28 @@ namespace PixelInternalAPI.Extensions
 		/// <typeparam name="T">The type of the <see cref="RoomFunction"/>.</typeparam>
 		public static void AddRoomFunction<T>(this RoomAsset asset, T func) where T : RoomFunction =>
 			asset.roomFunctionContainer.AddFunction(func);
-		
+		/// <summary>
+		/// Returns the <see cref="NPCAttributesContainer"/> from the <paramref name="npc"/>.
+		/// </summary>
+		/// <param name="npc">The npc.</param>
+		/// <returns>The <see cref="NPCAttributesContainer"/> component.</returns>
+		public static NPCAttributesContainer GetNPCContainer(this NPC npc) =>
+			npc.GetComponent<NPCAttributesContainer>();
+		/// <summary>
+		/// Gets the <see cref="CustomPlayerCameraComponent"/> through the <paramref name="cam"/>.
+		/// </summary>
+		/// <param name="cam">The <see cref="GameCamera"/>.</param>
+		/// <returns>The <see cref="CustomPlayerCameraComponent"/> component.</returns>
+		public static CustomPlayerCameraComponent GetCustomCam(this GameCamera cam) =>
+			cam.GetComponent<CustomPlayerCameraComponent>();
+		/// <summary>
+		/// Gets the <see cref="CustomPlayerCameraComponent"/> through the <paramref name="pm"/>.
+		/// </summary>
+		/// <param name="pm">The <see cref="PlayerManager"/> itself.</param>
+		/// <returns>The <see cref="CustomPlayerCameraComponent"/> component.</returns>
+		public static CustomPlayerCameraComponent GetCustomCam(this PlayerManager pm) =>
+			Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).GetCustomCam();
+
 
 		//readonly static FieldInfo rotMap_sprites = AccessTools.Field(typeof(SpriteRotationMap), "spriteSheet");
 		//readonly static FieldInfo animatedsprite_bypassrotation = AccessTools.Field(typeof(AnimatedSpriteRotator), "bypassRotation");
