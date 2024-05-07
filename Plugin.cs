@@ -139,14 +139,21 @@ namespace PixelInternalAPI
 			if (Input.GetKeyDown(KeyCode.K))
 			{
 				if (!hasAdded)
-					comp.AddModifier("staminaRise", mod);
+				{
+					comp.AddModifier("walkSpeed", wmod);
+					comp.AddModifier("runSpeed", rmod);
+				}
 				else
-					comp.RemoveModifier(mod);
+				{
+					comp.RemoveModifier(wmod);
+					comp.RemoveModifier(rmod);
+				}
 				hasAdded = !hasAdded;
 			}
 		}
 
-		readonly static ValueModifier mod = new(3, 3);
+		readonly static ValueModifier wmod = new(3);
+		readonly static ValueModifier rmod = new(3);
 
 		static bool hasAdded = false;
 

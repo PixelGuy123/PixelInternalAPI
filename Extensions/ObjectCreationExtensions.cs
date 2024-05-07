@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using MTM101BaldAPI;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
@@ -295,12 +296,8 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>A <see cref="SodaMachine"/> instance.</returns>
 		public static SodaMachine CreateSodaMachineInstance(Texture sodaTex, Texture sodaOutTex, bool isPrefab = true)
 		{
-			var machine = Object.Instantiate(prefab);
-			if (isPrefab)
-			{
-				Object.DontDestroyOnLoad(machine.gameObject);
-				machine.gameObject.SetActive(false);
-			}
+			var machine = Instantiate(prefab);
+			
 
 			var renderer = machine.meshRenderer; //(MeshRenderer)_sodaMach_meshRenderer.GetValue(machine);
 			renderer.materials[1].mainTexture = sodaTex;
@@ -310,6 +307,8 @@ namespace PixelInternalAPI.Extensions
 			}; ; //_sodaMach_outofstockmat.SetValue(machine, mat);
 
 			BasePlugin._machines.Add(machine.GetComponent<SodaMachineCustomComponent>());
+			if (isPrefab)
+				machine.gameObject.ConvertToPrefab(true);
 
 			return machine;
 		}
