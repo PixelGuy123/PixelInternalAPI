@@ -1,10 +1,14 @@
 ﻿using HarmonyLib;
 using MTM101BaldAPI;
+using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
+using TMPro;
+
 // using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEngine.Object;
 
 namespace PixelInternalAPI.Extensions
@@ -488,6 +492,85 @@ namespace PixelInternalAPI.Extensions
 			animator.spriteRenderer = renderer;
 			return renderer;
 		}
+		// ****************** UI Stuff ********************
+		/// <summary>
+		/// Creates a simple <see cref="Canvas"/>.
+		/// </summary>
+		/// <returns>A <see cref="Canvas"/> instance.</returns>
+		public static Canvas CreateCanvas()
+		{
+			var canvas = new GameObject("Canvas").AddComponent<Canvas>();
+			canvas.additionalShaderChannels = AdditionalCanvasShaderChannels.None;
+			canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+			canvas.gameObject.layer = LayerStorage.ui;
+
+			var scaler = canvas.gameObject.AddComponent<CanvasScaler>();
+			scaler.referenceResolution = new(480f, 360f);
+			scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+			scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+			scaler.referencePixelsPerUnit = 1f;
+
+			canvas.gameObject.AddComponent<PlaneDistance>().planeDistance = 2f;
+
+			return canvas;
+		}
+		/// <summary>
+		/// Creates a <see cref="TextMeshProUGUI"/> object.
+		/// </summary>
+		/// <param name="color">The color of the text.</param>
+		/// <returns>A <see cref="TextMeshProUGUI"/> instance.</returns>
+		public static TextMeshProUGUI CreateTextMeshProUGUI(Color color)
+		{
+			var text = new GameObject("text").AddComponent<TextMeshProUGUI>();
+			text.color = color;
+			text.gameObject.layer = LayerStorage.ui;
+
+			return text;
+		}
+		/// <summary>
+		/// Creates an <see cref="Image"/>.
+		/// </summary>
+		/// <param name="canvas">The <see cref="Canvas"/> the image is supposed to be attached.</param>
+		/// <param name="texture">The <see cref="Texture2D"/> of the image.</param>
+		/// <param name="coverTheEntireScreen">If true, it'll have the same parameters as the gum overlay, to cover the entire screen.</param>
+		/// <returns>An <see cref="Image"/> instance.</returns>
+		public static Image CreateImage(Canvas canvas, Texture2D texture, bool coverTheEntireScreen = true) => 
+			CreateImage(canvas, texture != null ? AssetLoader.SpriteFromTexture2D(texture, 1f) : null, coverTheEntireScreen);
+
+		/// <summary>
+		/// Creates an <see cref="Image"/>.
+		/// </summary>
+		/// <param name="canvas">The <see cref="Canvas"/> the image is supposed to be attached.</param>
+		/// <param name="sprite">The <see cref="Sprite"/> of the image.</param>
+		/// <param name="coverTheEntireScreen">If true, it'll have the same parameters as the gum overlay, to cover the entire screen.</param>
+		/// <returns>An <see cref="Image"/> instance.</returns>
+		public static Image CreateImage(Canvas canvas, Sprite sprite, bool coverTheEntireScreen = true)
+		{
+			var img = new GameObject("Image").AddComponent<Image>();
+			if (sprite != null)
+				img.sprite = sprite;
+
+			img.transform.SetParent(canvas.transform);
+			img.transform.localPosition = Vector3.zero;
+			img.gameObject.layer = LayerStorage.ui;
+
+			if (coverTheEntireScreen)
+			{
+				img.rectTransform.sizeDelta = new(0f, 360f);
+				img.rectTransform.anchorMin = new(0f, 0.5f);
+				img.rectTransform.anchorMax = new(1f, 0.5f);
+			}
+
+			return img;
+		}
+		/// <summary>
+		/// Creates an <see cref="Image"/> with no texture.
+		/// </summary>
+		/// <param name="canvas">The <see cref="Canvas"/> the image is supposed to be attached.</param>
+		/// <param name="coverTheEntireScreen">If true, it'll have the same parameters as the gum overlay, to cover the entire screen.</param>
+		/// <returns>An <see cref="Image"/> instance with no texture.</returns>
+		public static Image CreateImage(Canvas canvas, bool coverTheEntireScreen = true) =>
+			CreateImage(canvas, sprite:null, coverTheEntireScreen);
 
 	}
 }

@@ -10,8 +10,11 @@ using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
+using PixelInternalAPI.Misc;
 #if DEBUG
 using System.Reflection.Emit;
+using TMPro;
+
 #endif
 // using System.Reflection;
 using UnityEngine;
@@ -43,7 +46,7 @@ namespace PixelInternalAPI
 		// *************** Asset Load IEnumerators ***************
 		IEnumerator GetBaseAssets()
 		{
-			yield return 2;
+			yield return 3;
 			yield return "Grabbing soda machines for creation";
 			// ****** Soda machine *******
 			GenericExtensions.FindResourceObjects<SodaMachine>().Do(x => {
@@ -77,6 +80,57 @@ namespace PixelInternalAPI
 			baseSprite.gameObject.layer = LayerStorage.billboardLayer;
 			baseSprite.gameObject.ConvertToPrefab(true);
 			ObjectCreationExtensions._nonbillboardprefab = baseSprite;
+
+			// ******** Popups ********
+			yield return "Creating in-game popups";
+
+			var canvas = ObjectCreationExtensions.CreateCanvas();
+			canvas.gameObject.ConvertToPrefab(true);
+			canvas.name = "PopupCanvas";
+
+			var popup = ObjectCreationExtensions.CreateImage(canvas, TextureExtensions.CreateSolidTexture(360, 360, Color.white).AddTextureOutline(Color.black, 3), false);
+			popup.name = "PopupImage";
+
+			var titleText = ObjectCreationExtensions.CreateTextMeshProUGUI(Color.black);
+			titleText.alignment = TextAlignmentOptions.Center;
+			titleText.fontWeight = FontWeight.Bold;
+			titleText.fontSizeMax = 9;
+			titleText.fontSize = 9;
+			titleText.fontSizeMin = 5;
+			titleText.enableAutoSizing = true;
+			titleText.characterSpacing = 5;
+			titleText.enableWordWrapping = true;
+
+			titleText.transform.SetParent(popup.transform);
+			titleText.transform.localPosition = Vector3.up * 39.98f;
+			titleText.rectTransform.sizeDelta = new(100f, 50f);
+			titleText.name = "PopupTitle";
+
+			var descText = ObjectCreationExtensions.CreateTextMeshProUGUI(Color.black);
+			descText.horizontalAlignment = HorizontalAlignmentOptions.Center;
+			descText.verticalAlignment = VerticalAlignmentOptions.Top;
+
+			descText.transform.SetParent(popup.transform);
+			descText.transform.localPosition = Vector3.down * 119.6f;
+			descText.name = "PopupDescription";
+
+			descText.fontSize = 7;
+			descText.fontSizeMax = 7;
+			descText.fontSizeMin = 4;
+			descText.characterSpacing = 3;
+			descText.enableWordWrapping = true;
+			descText.rectTransform.sizeDelta = new(100f, 300f);
+
+
+			var popupComp = canvas.gameObject.AddComponent<Popup>();
+			popupComp.render = canvas;
+			popupComp.desc = descText;
+			popupComp.title = titleText;
+			popupComp.image = popup;
+
+			ResourceManager.man = Singleton<GlobalCam>.Instance.gameObject.AddComponent<PopupManager>();
+			ResourceManager.man.popupPrefab = popupComp;
+			ResourceManager.man.cam = Singleton<GlobalCam>.Instance;
 
 			yield break;
 		}
@@ -165,6 +219,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.2.1";
+		internal const string PLUGIN_VERSION = "1.2.2";
 	}
 }

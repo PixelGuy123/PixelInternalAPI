@@ -36,6 +36,10 @@ namespace PixelInternalAPI.Classes
 		/// </summary>
 		public readonly static LayerMask map = LayerMask.NameToLayer("Map");
 		/// <summary>
+		/// UI Layer
+		/// </summary>
+		public readonly static LayerMask ui = LayerMask.NameToLayer("UI");
+		/// <summary>
 		/// A specific layer used by the gum for its entity collision mask
 		/// </summary>
 		public readonly static LayerMask gumCollisionMask = 2113537;

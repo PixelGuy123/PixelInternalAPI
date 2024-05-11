@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using static PixelInternalAPI.ResourceManager;
+using PixelInternalAPI.Misc;
 
 namespace PixelInternalAPI
 {
@@ -30,21 +29,6 @@ namespace PixelInternalAPI
 
 		static internal List<WeightedItemObject> _vendingMachineItems = [];
 		static internal List<WeightedItemObject> _mysteryItems = [];
-
-		// ******************************* Prefabs **********************************
-
-		/// <summary>
-		/// Adds the <paramref name="obj"/> as a "prefab", in other words, an object that will be enabled in the generator and disabled afterwards.
-		/// <para>This is useful for objects that are builded through <see cref="ObjectBuilder"/> for example.</para>
-		/// </summary>
-		/// <param name="obj"></param>
-		public static GameObject AddAsGeneratorPrefab(this GameObject obj)
-		{
-			_prefabs.Add(obj);
-			return obj; // builder pattern lol
-		}
-
-		static internal List<GameObject> _prefabs = [];
 
 		// ************************************************ Callbacks *************************************************
 
@@ -91,6 +75,22 @@ namespace PixelInternalAPI
 			OnNextLevel?.Invoke(sender, nextlevel);
 		}
 
-		
+		// ********************************** Popups **************************************
+		/// <summary>
+		/// Raises a popup in the right bottom of the screen.
+		/// </summary>
+		/// <param name="info">The plugin that is calling this.</param>
+		/// <param name="message">The message to be raised.</param>
+		public static void RaisePopup(BepInEx.PluginInfo info, string message) =>
+			man.QueuePopup(info, message, false);
+		/// <summary>
+		/// Raises a popup in the right bottom of the screen.
+		/// </summary>
+		/// <param name="info">The plugin that is calling this.</param>
+		/// <param name="messageKey">The localized message to be raised</param>
+		public static void RaiseLocalizedPopup(BepInEx.PluginInfo info, string messageKey) =>
+			man.QueuePopup(info, messageKey, true);
+
+		internal static PopupManager man;
 	}
 }

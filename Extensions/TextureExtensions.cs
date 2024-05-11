@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEngine;
 
 namespace PixelInternalAPI.Extensions
 {
@@ -61,12 +62,16 @@ namespace PixelInternalAPI.Extensions
 		/// <summary>
 		/// Creates a <see cref="Texture2D"/> with a <paramref name="solidColor"/> defined.
 		/// </summary>
-		/// <param name="width"></param>
-		/// <param name="height"></param>
-		/// <param name="solidColor"></param>
+		/// <param name="width">The width of the texture.</param>
+		/// <param name="height">The height of the texture.</param>
+		/// <param name="solidColor">The fill up color for the texture.</param>
 		/// <returns><see cref="Texture2D"/> with a <paramref name="solidColor"/> defined.</returns>
+		/// <exception cref="System.ArgumentException"></exception>
 		public static Texture2D CreateSolidTexture(int width, int height, Color solidColor)
 		{
+			if (width <= 0 || height <= 0)
+				throw new System.ArgumentException($"width or height is below 1 ({width},{height})");
+
 			var texture = new Texture2D(width, height);
 			var colors = new Color[width * height];
 			for (int i = 0; i < colors.Length; i++)
@@ -74,6 +79,53 @@ namespace PixelInternalAPI.Extensions
 			texture.SetPixels(colors);
 			texture.Apply();
 			return texture;
+		}
+		/// <summary>
+		/// Adds an outline to the <paramref name="tex"/> with a outline width of 1.
+		/// </summary>
+		/// <param name="tex">The target texture.</param>
+		/// <param name="outlineColor">The color of the outline.</param>
+		/// <returns>The same texture but with an outline.</returns>
+		/// <exception cref="System.ArgumentException"></exception>
+		public static Texture2D AddTextureOutline(this Texture2D tex, Color outlineColor) =>
+			tex.AddTextureOutline(outlineColor, 1);
+		/// <summary>
+		/// Adds an outline to the <paramref name="tex"/>.
+		/// </summary>
+		/// <param name="tex">The target texture.</param>
+		/// <param name="outlineColor">The color of the outline.</param>
+		/// <param name="outlineWidth">The outline's width</param>
+		/// <returns>The same texture but with an outline.</returns>
+		/// <exception cref="System.ArgumentException"></exception>
+		public static Texture2D AddTextureOutline(this Texture2D tex, Color outlineColor, int outlineWidth)
+		{
+			if (outlineWidth <= 0)
+				throw new System.ArgumentException("The outline width is below or equal to 0");
+			if (outlineWidth > tex.width || outlineWidth > tex.height)
+				throw new System.ArgumentException($"The outline width is higher than the texture\'s width or height (Texture Width: {tex.width}; Texture Height: {tex.height}; Outline Width: {outlineWidth})");
+			var colors = tex.GetPixels();
+			for (int i = 0; i < outlineWidth; i++)
+			{
+				// right
+				int x = 0;
+				for (; x < tex.width; x++)
+					colors[x + (i * tex.width)] = outlineColor;
+				// up (right)
+				for (; x < colors.Length; x += tex.width)
+					colors[x - i] = outlineColor;
+				
+				// left (up)
+				for (x = colors.Length - 1; x > colors.Length - tex.width; x--)
+					colors[x - (i * tex.width)] = outlineColor;
+				
+
+				// down (left + up)
+				for (; x > 0; x -= tex.width)
+					colors[x + i] = outlineColor;
+			}
+			tex.SetPixels(colors);
+			tex.Apply();
+			return tex;
 		}
 		/// <summary>
 		/// Creates a Cubemap from <paramref name="texture"/>
