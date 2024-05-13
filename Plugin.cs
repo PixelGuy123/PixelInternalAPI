@@ -2,8 +2,6 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using MTM101BaldAPI;
-using MTM101BaldAPI.Components;
-using MTM101BaldAPI.PlusExtensions;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
@@ -11,12 +9,13 @@ using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using PixelInternalAPI.Misc;
-#if DEBUG
-using System.Reflection.Emit;
 using TMPro;
-
+#if DEBUG
+using MTM101BaldAPI.PlusExtensions;
+using MTM101BaldAPI.Components;
+using System.Reflection.Emit;
 #endif
-// using System.Reflection;
+
 using UnityEngine;
 
 namespace PixelInternalAPI

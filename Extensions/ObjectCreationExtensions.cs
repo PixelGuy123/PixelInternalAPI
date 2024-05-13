@@ -67,31 +67,7 @@ namespace PixelInternalAPI.Extensions
 			man.audioDevice.rolloffMode = AudioRolloffMode.Logarithmic;
 			return man;
 		}
-		/// <summary>
-		/// Resets an <see cref="AudioManager"/> for an intended prefab (an object in the DontDestroyOnLoad scene that is intended to serve as a prefab). This is intended to be used upon creating the GameObject.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="audio"></param>
-		/// <returns>The <see cref="AudioManager"/> itself.</returns>
-		public static T SetAudioManagerAsPrefab<T>(this T audio) where T : AudioManager
-		{
-			if (audio.audioDevice != null && audio.audioDevice.gameObject != audio.gameObject) // Must check for the gameObject aswell to not cause unintended behaviour
-				Destroy(audio.audioDevice.gameObject);
 
-			if (audio is PropagatedAudioManager)
-			{
-				var obj = new GameObject(audio.name + "_TemporaryPropagator").AddComponent<AudioSource>(); // guarantees no null exceptions
-				obj.transform.SetParent(audio.transform);
-				obj.enabled = false;
-				audio.audioDevice = obj; // Accumulate disabled audio source inside the gameObject, it won't spam null exception
-			}
-
-			AudioManager.totalIds--;
-			if (AudioManager.totalIds < 0)
-				AudioManager.totalIds = 0;
-			audio.sourceId = 0; // Copypaste from api lmao
-			return audio;
-		}
 		/// <summary>
 		/// Mkaes the <see cref="AudioManager"/> automatically play something upon active. This is useful for looping songs like Playtime's song for example.
 		/// </summary>

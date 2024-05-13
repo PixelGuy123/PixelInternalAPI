@@ -83,6 +83,7 @@ namespace PixelInternalAPI
 		/// <param name="message">The message to be raised.</param>
 		public static void RaisePopup(BepInEx.PluginInfo info, string message) =>
 			man.QueuePopup(info, message, false);
+		
 		/// <summary>
 		/// Raises a popup in the right bottom of the screen.
 		/// </summary>
@@ -90,6 +91,7 @@ namespace PixelInternalAPI
 		/// <param name="messageKey">The localized message to be raised</param>
 		public static void RaiseLocalizedPopup(BepInEx.PluginInfo info, string messageKey) =>
 			man.QueuePopup(info, messageKey, true);
+		
 
 		internal static PopupManager man;
 	}
