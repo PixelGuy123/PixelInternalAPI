@@ -33,9 +33,6 @@ namespace PixelInternalAPI.Misc
 		[SerializeField]
 		internal Popup popupPrefab;
 
-		[SerializeField]
-		internal GlobalCam cam;
-
 		internal Queue<PopupInfo> messagesToQueue = [];
 
 		internal void QueuePopup(BepInEx.PluginInfo plug, string message, bool isLocalized) =>
@@ -74,7 +71,7 @@ namespace PixelInternalAPI.Misc
 
 			while (true)
 			{
-				time += 3f * Time.deltaTime;
+				time += 3f * Time.unscaledDeltaTime;
 				if (time > 1f)
 					break;
 
@@ -97,7 +94,7 @@ namespace PixelInternalAPI.Misc
 
 			while (true)
 			{
-				time += 3f * Time.deltaTime;
+				time += 3f * Time.unscaledDeltaTime;
 				if (time > 1f)
 					break;
 

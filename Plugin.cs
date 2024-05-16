@@ -127,9 +127,10 @@ namespace PixelInternalAPI
 			popupComp.title = titleText;
 			popupComp.image = popup;
 
-			ResourceManager.man = Singleton<GlobalCam>.Instance.gameObject.AddComponent<PopupManager>();
+			ResourceManager.man = new GameObject("PopupManager").AddComponent<PopupManager>();
+			DontDestroyOnLoad(ResourceManager.man.gameObject);
+
 			ResourceManager.man.popupPrefab = popupComp;
-			ResourceManager.man.cam = Singleton<GlobalCam>.Instance;
 
 			yield break;
 		}
