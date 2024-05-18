@@ -219,6 +219,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.2.2";
+		internal const string PLUGIN_VERSION = "1.2.3";
 	}
 }

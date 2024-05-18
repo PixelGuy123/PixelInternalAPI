@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 namespace PixelInternalAPI.Extensions
@@ -38,26 +39,24 @@ namespace PixelInternalAPI.Extensions
 		/// </summary>
 		/// <param name="source"></param>
 		/// <returns>A readable <see cref="Texture2D"/></returns>
-		public static Texture2D MakeReadableTexture(this Texture2D source) // Credits to whoever replied the question in this post: https://stackoverflow.com/questions/44733841/how-to-make-texture2d-readable-via-script
+		public static Texture2D MakeReadableTexture(this Texture2D source) // copypaste from texture pack now lol
 		{
-			RenderTexture renderTex = RenderTexture.GetTemporary(
-						source.width,
-						source.height,
-						0,
-						RenderTextureFormat.ARGB32,
-						RenderTextureReadWrite.sRGB,
-						1);
+			RenderTexture dummyTex = RenderTexture.GetTemporary(source.width, source.height, 24);
+			Texture2D toDump = source;
 
-			Graphics.Blit(source, renderTex);
-			RenderTexture previous = RenderTexture.active;
-			RenderTexture.active = renderTex;
-			Texture2D readableText = new(source.width, source.height);
-			readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
-			readableText.mipMapBias = 0f;
-			readableText.Apply();
-			RenderTexture.active = previous;
-			RenderTexture.ReleaseTemporary(renderTex);
-			return readableText;
+			toDump = new(toDump.width, toDump.height, toDump.format, toDump.mipmapCount > 1)
+			{
+				name = source.name
+			};
+			Graphics.Blit(source, dummyTex);
+			toDump.filterMode = source.filterMode;
+			dummyTex.filterMode = source.filterMode;
+
+			toDump.ReadPixels(new Rect(0, 0, dummyTex.width, dummyTex.height), 0, 0);
+			toDump.Apply();
+			RenderTexture.ReleaseTemporary(dummyTex);
+
+			return toDump;
 		}
 		/// <summary>
 		/// Creates a <see cref="Texture2D"/> with a <paramref name="solidColor"/> defined.
