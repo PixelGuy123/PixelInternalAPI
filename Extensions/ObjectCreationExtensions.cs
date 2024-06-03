@@ -4,6 +4,7 @@ using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
+using System;
 using TMPro;
 
 // using System.Reflection;
@@ -113,9 +114,8 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="collider"></param>
 		/// <param name="triggerCollider"></param>
 		/// <param name="rendererBase"></param>
-		/// <param name="triggers"></param>
 		/// <returns>The <see cref="Entity"/> component</returns>
-		public static Entity CreateEntity(this GameObject target, Collider collider, Collider triggerCollider, Transform rendererBase = null, IEntityTrigger[] triggers = null)
+		public static Entity CreateEntity(this GameObject target, Collider collider, Collider triggerCollider, Transform rendererBase = null)
 		{
 			LayerMask mask = target.layer;
 			var e = target.AddComponent<Entity>();
@@ -125,11 +125,8 @@ namespace PixelInternalAPI.Extensions
 			e.collider = collider;//_entity_collider.SetValue(e, collider);
 			e.externalActivity = target.AddComponent<ActivityModifier>();//_entity_activity.SetValue(e, target.AddComponent<ActivityModifier>());
 			e.trigger = triggerCollider;//_entity_trigger.SetValue(e, triggerCollider);
-			if (triggers != null)
-				e.iEntityTrigger = triggers;//	_entity_etrigger.SetValue(e, triggers);
 
-
-				return e;
+			return e;
 		}
 		/// <summary>
 		/// Creates an <see cref="Entity"/> component to an object. Warning: Adding an <see cref="Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs. The default collider added is the <see cref="CapsuleCollider"/>
@@ -139,10 +136,9 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="colliderRadius"></param>
 		/// <param name="triggerColliderRadius"></param>
 		/// <param name="rendererBase"></param>
-		/// <param name="triggers"></param>
 		/// <returns>The <see cref="Entity"/> component</returns>
-		public static Entity CreateEntity(this GameObject target, float colliderRadius, float triggerColliderRadius = 0f, Transform rendererBase = null, IEntityTrigger[] triggers = null) =>
-			CreateEntity(target, colliderRadius, triggerColliderRadius, out _, out _, rendererBase, triggers);
+		public static Entity CreateEntity(this GameObject target, float colliderRadius, float triggerColliderRadius = 0f, Transform rendererBase = null) =>
+			CreateEntity(target, colliderRadius, triggerColliderRadius, out _, out _, rendererBase);
 
 		/// <summary>
 		/// Creates an <see cref="Entity"/> component to an object. Warning: Adding an <see cref="Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs. The default collider added is the <see cref="CapsuleCollider"/>
@@ -154,9 +150,8 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="nonTriggerCollider"></param>
 		/// <param name="triggerCollider"></param>
 		/// <param name="rendererBase"></param>
-		/// <param name="triggers"></param>
 		/// <returns>The <see cref="Entity"/> component</returns>
-		public static Entity CreateEntity(this GameObject target, float colliderRadius, float triggerColliderRadius, out CapsuleCollider nonTriggerCollider, out CapsuleCollider triggerCollider, Transform rendererBase = null, IEntityTrigger[] triggers = null)
+		public static Entity CreateEntity(this GameObject target, float colliderRadius, float triggerColliderRadius, out CapsuleCollider nonTriggerCollider, out CapsuleCollider triggerCollider, Transform rendererBase = null)
 		{
 			var collider = target.AddComponent<CapsuleCollider>();
 			collider.radius = colliderRadius;
@@ -173,7 +168,7 @@ namespace PixelInternalAPI.Extensions
 			triggerCollider = trigger;
 
 
-			return CreateEntity(target, collider, trigger, rendererBase, triggers);
+			return CreateEntity(target, collider, trigger, rendererBase);
 		}
 		/// <summary>
 		/// Sets a collision mask for the <paramref name="entity"/> (not the GameObject layer mask, it's another mask).
