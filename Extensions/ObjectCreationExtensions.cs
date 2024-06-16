@@ -472,7 +472,7 @@ namespace PixelInternalAPI.Extensions
 		{
 			var canvas = new GameObject("Canvas").AddComponent<Canvas>();
 			canvas.additionalShaderChannels = AdditionalCanvasShaderChannels.None;
-			canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+			canvas.renderMode = RenderMode.ScreenSpaceCamera;
 			canvas.gameObject.layer = LayerStorage.ui;
 
 			var scaler = canvas.gameObject.AddComponent<CanvasScaler>();

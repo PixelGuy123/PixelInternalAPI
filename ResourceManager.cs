@@ -34,9 +34,9 @@ namespace PixelInternalAPI
 		public static void AddKeyTypeItem(this ItemObject item) => _unlockableItems.Add(item.itemType);
 
 
-		static internal List<WeightedItemObject> _vendingMachineItems = [];
-		static internal List<WeightedItemObject> _mysteryItems = [];
-		static internal HashSet<Items> _unlockableItems = [Items.DetentionKey];
+		readonly static internal List<WeightedItemObject> _vendingMachineItems = [];
+		readonly static internal List<WeightedItemObject> _mysteryItems = [];
+		readonly static internal HashSet<Items> _unlockableItems = [Items.DetentionKey];
 
 		// ************************************************ Callbacks *************************************************
 
