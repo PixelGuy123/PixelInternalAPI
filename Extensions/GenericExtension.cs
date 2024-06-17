@@ -357,10 +357,15 @@ namespace PixelInternalAPI.Extensions
 		/// </summary>
 		/// <typeparam name="T">The <see cref="RoomFunction"/> to be added into the <paramref name="asset"/>.</typeparam>
 		/// <param name="asset">The <see cref="RoomAsset"/> to contain the <typeparamref name="T"/></param>
-		public static void AddRoomFunction<T>(this RoomAsset asset) where T : RoomFunction
+		public static T AddRoomFunction<T>(this RoomAsset asset) where T : RoomFunction
 		{
-			if (!asset.roomFunctionContainer.GetComponent<T>())
-				asset.roomFunctionContainer.AddFunction(asset.roomFunctionContainer.gameObject.AddComponent<T>());
+			var fun = asset.roomFunctionContainer.GetComponent<T>();
+			if (!fun)
+			{
+				fun = asset.roomFunctionContainer.gameObject.AddComponent<T>();
+				asset.roomFunctionContainer.AddFunction(fun);
+			}
+			return fun;
 		}
 		/// <summary>
 		/// Adds an existing <typeparamref name="T"/> object into the <paramref name="asset"/>.
