@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace PixelInternalAPI.Patches
 {
@@ -32,6 +33,20 @@ namespace PixelInternalAPI.Patches
 			ResourceManager.RaiseNextLevel(Singleton<BaseGameManager>.Instance, isNextLevel);
 			isNextLevel = false;
 		}
+		[HarmonyPatch(typeof(CoreGameManager), "RestoreMap")]
+		[HarmonyFinalizer]
+		private static System.Exception ShutExceptionUp(System.Exception __exception)
+		{
+			if (__exception != null)
+			{
+				Debug.LogWarning("There has been an exception thrown but has been shut as a fix!");
+				Debug.LogWarning("----------------------------------");
+				Debug.LogException(__exception);
+				Debug.LogWarning("----------------------------------");
+			}
+			return null;
+		}
+
 		[HarmonyPatch(typeof(BaseGameManager), "LoadNextLevel")]
 		[HarmonyPrefix]
 		private static void NextLevelBooleanSet() =>

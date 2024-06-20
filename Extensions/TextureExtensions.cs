@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PixelInternalAPI.Extensions
 {
@@ -71,7 +69,7 @@ namespace PixelInternalAPI.Extensions
 			if (width <= 0 || height <= 0)
 				throw new System.ArgumentException($"width or height is below 1 ({width},{height})");
 
-			var texture = new Texture2D(width, height);
+			var texture = new Texture2D(width, height) { filterMode = FilterMode.Point };
 			var colors = new Color[width * height];
 			for (int i = 0; i < colors.Length; i++)
 				colors[i] = solidColor;
