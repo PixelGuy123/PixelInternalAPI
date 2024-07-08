@@ -24,8 +24,8 @@ namespace PixelInternalAPI.Extensions
 			for (int i = 0; i < colors.Length; i++)
 			{
 				if (colors2[i].a < 1f)
-					continue; // Only solid colors allowed
-
+					continue; // Ignore alpha
+				
 				colors[i] = colors2[i];
 			}
 
@@ -163,6 +163,41 @@ namespace PixelInternalAPI.Extensions
 			textureAtlas.SetPixels(0, 256, 256, 256, array);
 			textureAtlas.Apply();
 			return textureAtlas;
+		}
+		/// <summary>
+		/// Applies a light increase/decrease into the texture based off the given <paramref name="percentage"/>.
+		/// </summary>
+		/// <param name="tex">The texture to be applied.</param>
+		/// <param name="percentage">The percentage of the light which will be based off the offset between the texture's color and the maximum light/dark that can be applied. 
+		/// Ranging from -100 to 100. Negative values will decrease the light, positive values will increase it.
+		/// </param>
+		/// <returns>The applied texture.</returns>
+		public static Texture2D ApplyLightLevel(this Texture2D tex, float percentage)
+		{
+			if (percentage == 0f)
+				return tex;
+
+			percentage = Mathf.Clamp(percentage, -100, 100f) / 100f; // turn into percentage
+			
+			Color[] colors = tex.GetPixels();
+			for (int i = 0; i < colors.Length; i++)
+			{
+				if (percentage > 0f)
+				{
+					colors[i].r += (1f - colors[i].r) * percentage;
+					colors[i].g += (1f - colors[i].g) * percentage;
+					colors[i].b += (1f - colors[i].b) * percentage;
+				}
+				else
+				{
+					colors[i].r += (-1f - colors[i].r) * -percentage;
+					colors[i].g += (-1f - colors[i].g) * -percentage;
+					colors[i].b += (-1f - colors[i].b) * -percentage;
+				}
+			}
+			tex.SetPixels(colors);
+			tex.Apply();
+			return tex;
 		}
 	}
 }

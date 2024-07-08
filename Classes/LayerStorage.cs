@@ -44,6 +44,10 @@ namespace PixelInternalAPI.Classes
 		/// </summary>
 		public readonly static LayerMask gumCollisionMask = 2113537;
 		/// <summary>
+		/// The default layer used by the entity for its collision mask.
+		/// </summary>
+		public readonly static LayerMask entityCollisionMask = 2113541;
+		/// <summary>
 		/// A specific layer used by the Principal's <see cref="Looker"/> component to see the npcs.
 		/// </summary>
 		public readonly static LayerMask principalLookerMask = 2326529;

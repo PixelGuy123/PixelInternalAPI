@@ -34,6 +34,16 @@ namespace PixelInternalAPI
 			LoadingEvents.RegisterOnAssetsLoaded(Info, GetBaseAssets(), false);
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, AddAssetsInGame(), true);
+
+			ResourceManager.AddPostGenCallback((x) =>
+			{
+				foreach (var machine in FindObjectsOfType<SodaMachine>())
+				{
+					var comp = machine.GetComponent<SodaMachineCustomComponent>();
+					if (comp && !_machines.Contains(comp)) // If the machine's component wasn't found in the register, this wasn't made using the api standard methods, so should be deleted
+						Destroy(comp);
+				}
+			});
 		}
 
 		internal static List<SodaMachineCustomComponent> _machines = [];
@@ -54,7 +64,7 @@ namespace PixelInternalAPI
 				comp.requiredItems.Add(Items.Quarter);
 				_machines.Add(comp);
 			});
-			ObjectCreationExtensions.prefab = GenericExtensions.FindResourceObject<SodaMachine>();
+			ObjectCreationExtensions.prefab = GenericExtensions.FindResourceObject<SodaMachine>().DuplicatePrefab();
 
 			yield return "Getting sprite billboard prefabs";
 
@@ -219,6 +229,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.2.3.1";
+		internal const string PLUGIN_VERSION = "1.2.4";
 	}
 }
