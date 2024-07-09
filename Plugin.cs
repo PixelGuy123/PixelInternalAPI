@@ -94,6 +94,7 @@ namespace PixelInternalAPI
 			yield return "Creating in-game popups";
 
 			var canvas = ObjectCreationExtensions.CreateCanvas();
+			canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 			canvas.gameObject.ConvertToPrefab(true);
 			canvas.name = "PopupCanvas";
 
