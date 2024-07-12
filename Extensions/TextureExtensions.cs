@@ -210,15 +210,8 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="paths">The path to the image file.</param>
 		/// <returns>An array of the textures inside the sheet.</returns>
 		/// <exception cref="FileNotFoundException"></exception>
-		public static Sprite[] LoadSpriteSheet(int horizontalTiles, int verticalTiles, float pixelsPerUnit, params string[] paths)
-		{
-			var texs = LoadTextureSheet(horizontalTiles, verticalTiles, paths);
-			Sprite[] sprs = new Sprite[texs.Length];
-			for (int i = 0; i < sprs.Length; i++)
-				sprs[i] = AssetLoader.SpriteFromTexture2D(texs[i], pixelsPerUnit);
-
-			return sprs;
-		}
+		public static Sprite[] LoadSpriteSheet(int horizontalTiles, int verticalTiles, float pixelsPerUnit, params string[] paths) =>
+			LoadSpriteSheet(horizontalTiles, verticalTiles, pixelsPerUnit, new(0.5f, 0.5f), paths);
 
 		/// <summary>
 		/// Converts a full sprite sheet image into separate textures.
@@ -232,10 +225,24 @@ namespace PixelInternalAPI.Extensions
 		/// <exception cref="FileNotFoundException"></exception>
 		public static Sprite[] LoadSpriteSheet(int horizontalTiles, int verticalTiles, float pixelsPerUnit, Vector2 center, params string[] paths)
 		{
-			var texs = LoadTextureSheet(horizontalTiles, verticalTiles, paths);
-			Sprite[] sprs = new Sprite[texs.Length];
-			for (int i = 0; i < sprs.Length; i++)
-				sprs[i] = AssetLoader.SpriteFromTexture2D(texs[i], center, pixelsPerUnit);
+			string path = Path.Combine(paths);
+			if (!File.Exists(path))
+				throw new FileNotFoundException($"The path to {path} doesn\'t exist.");
+
+			var tex = AssetLoader.TextureFromFile(path);
+
+			int estimatedXsize = tex.width / horizontalTiles;
+			int estimatedYsize = tex.height / verticalTiles; // Gets the estimated size of each texture per tile
+															 // 
+			Sprite[] sprs = new Sprite[horizontalTiles * verticalTiles];
+			int i = 0;
+			for (int x = 0; x < horizontalTiles; x++)
+			{
+				for (int y = verticalTiles - 1; y >= 0; y--)
+				{
+					sprs[i++] = Sprite.Create(tex, new Rect(x * estimatedXsize, y * estimatedXsize, estimatedXsize, estimatedYsize), center, pixelsPerUnit, 0, SpriteMeshType.FullRect);
+				}
+			}
 
 			return sprs;
 		}
