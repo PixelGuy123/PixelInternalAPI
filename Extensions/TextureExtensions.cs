@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using MTM101BaldAPI.AssetTools;
+using System.IO;
+using UnityEngine;
 
 namespace PixelInternalAPI.Extensions
 {
@@ -198,6 +200,92 @@ namespace PixelInternalAPI.Extensions
 			tex.SetPixels(colors);
 			tex.Apply();
 			return tex;
+		}
+		/// <summary>
+		/// Converts a full sprite sheet image into separate textures.
+		/// </summary>
+		/// <param name="horizontalTiles">The amount of sprites horizontally (beginning from the 1 index)</param>
+		/// <param name="verticalTiles">The amount of sprites vertically (beginning from the 1 index)</param>
+		/// <param name="pixelsPerUnit">The pixelsPerUnit used for Sprites.</param>
+		/// <param name="paths">The path to the image file.</param>
+		/// <returns>An array of the textures inside the sheet.</returns>
+		/// <exception cref="FileNotFoundException"></exception>
+		public static Sprite[] LoadSpriteSheet(int horizontalTiles, int verticalTiles, float pixelsPerUnit, params string[] paths)
+		{
+			var texs = LoadTextureSheet(horizontalTiles, verticalTiles, paths);
+			Sprite[] sprs = new Sprite[texs.Length];
+			for (int i = 0; i < sprs.Length; i++)
+				sprs[i] = AssetLoader.SpriteFromTexture2D(texs[i], pixelsPerUnit);
+
+			return sprs;
+		}
+
+		/// <summary>
+		/// Converts a full sprite sheet image into separate textures.
+		/// </summary>
+		/// <param name="horizontalTiles">The amount of sprites horizontally (beginning from the 1 index)</param>
+		/// <param name="verticalTiles">The amount of sprites vertically (beginning from the 1 index)</param>
+		/// <param name="pixelsPerUnit">The pixelsPerUnit used for Sprites.</param>
+		/// <param name="center">The center of the sprite.</param>
+		/// <param name="paths">The path to the image file.</param>
+		/// <returns>An array of the textures inside the sheet.</returns>
+		/// <exception cref="FileNotFoundException"></exception>
+		public static Sprite[] LoadSpriteSheet(int horizontalTiles, int verticalTiles, float pixelsPerUnit, Vector2 center, params string[] paths)
+		{
+			var texs = LoadTextureSheet(horizontalTiles, verticalTiles, paths);
+			Sprite[] sprs = new Sprite[texs.Length];
+			for (int i = 0; i < sprs.Length; i++)
+				sprs[i] = AssetLoader.SpriteFromTexture2D(texs[i], center, pixelsPerUnit);
+
+			return sprs;
+		}
+
+		/// <summary>
+		/// Converts a full sprite sheet image into separate textures.
+		/// </summary>
+		/// <param name="horizontalTiles">The amount of sprites horizontally (beginning from the 1 index)</param>
+		/// <param name="verticalTiles">The amount of sprites vertically (beginning from the 1 index)</param>
+		/// <param name="paths">The path to the image file.</param>
+		/// <returns>An array of the textures inside the sheet.</returns>
+		/// <exception cref="FileNotFoundException"></exception>
+		public static Texture2D[] LoadTextureSheet(int horizontalTiles, int verticalTiles, params string[] paths)
+		{
+			string path = Path.Combine(paths);
+			if (!File.Exists(path))
+				throw new FileNotFoundException($"The path to {path} doesn\'t exist.");
+
+			var tex = AssetLoader.TextureFromFile(path);
+			Color[] ogColors = tex.GetPixels();
+
+			int estimatedXsize = tex.width / horizontalTiles;
+			int estimatedYsize = tex.height / verticalTiles; // Gets the estimated size of each texture per tile
+			Color[] colors = new Color[estimatedXsize * estimatedYsize];
+
+			Texture2D[] texs = new Texture2D[horizontalTiles * verticalTiles];
+			int i = texs.Length - 1;
+
+			for (int y = 0; y < verticalTiles; y++) 
+			{
+				for (int x = horizontalTiles - 1; x >= 0; x--) // X coordinates are inverted to match the inverted y coordinates (and indexation of the textures)
+				{
+					Texture2D newTexture = new(estimatedXsize, estimatedYsize, tex.format, false)
+					{
+						filterMode = tex.filterMode,
+					};
+
+					int offsetX = x * estimatedXsize; // Sets an offset based on the estimated size
+					int offsetY = y * estimatedYsize;
+					for (int x2 = 0; x2 < estimatedXsize; x2++) // Loops around the tile, setting the pixelx in there to the other texture
+						for (int y2 = 0; y2 < estimatedYsize; y2++)
+							colors[y2 * estimatedXsize + x2] = ogColors[(offsetY + y2) * tex.width + (offsetX + x2)]; // Thanks to ChatGPT to convert 2D coordinates into 1D (I'd never guess the ogColors index)
+
+					newTexture.SetPixels(colors);
+					newTexture.Apply();
+					texs[i--] = newTexture;
+				}
+			}
+
+			return texs;
 		}
 	}
 }
