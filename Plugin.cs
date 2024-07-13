@@ -194,7 +194,7 @@ namespace PixelInternalAPI
 		[HarmonyPatch("Start")]
 		[HarmonyPostfix]
 		private static void PointsYeah(PlayerMovement __instance) =>
-			Singleton<CoreGameManager>.Instance.AddPoints(9999999, __instance.pm.playerNumber, true);
+			Singleton<CoreGameManager>.Instance.AddPoints(9999999, __instance.pm.playerNumber, false);
 
 		[HarmonyPatch("Update")]
 		[HarmonyPostfix]
