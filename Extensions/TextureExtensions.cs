@@ -238,7 +238,7 @@ namespace PixelInternalAPI.Extensions
 			int i = 0;
 			for (int y = verticalTiles - 1; y >= 0; y--)
 				for (int x = 0; x < horizontalTiles; x++)
-					sprs[i++] = Sprite.Create(tex, new Rect(x * estimatedXsize, y * estimatedXsize, estimatedXsize, estimatedYsize), center, pixelsPerUnit, 0, SpriteMeshType.FullRect);
+					sprs[i++] = Sprite.Create(tex, new Rect(x * estimatedXsize, y * estimatedYsize, estimatedXsize, estimatedYsize), center, pixelsPerUnit, 0, SpriteMeshType.FullRect);
 			
 			return sprs;
 		}
