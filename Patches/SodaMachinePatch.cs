@@ -14,9 +14,8 @@ namespace PixelInternalAPI.Patches
 			if (!comp) // If the soda machine doesn't have this component, it's not intended to use the api
 				return true;
 
-			__result = (___usesLeft > 0 || comp.infiniteUses) && comp.requiredItems.Contains(checkItem);
-			if (comp.infiniteUses)
-				___usesLeft = 10;
+			__result = ___usesLeft > 0 && comp.requiredItems.Contains(checkItem);
+
 			return false;
 		}
 	}

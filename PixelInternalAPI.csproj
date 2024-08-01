@@ -3,13 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net46</TargetFramework>
     <AssemblyName>PixelInternalAPI</AssemblyName>
-    <Description>My first plugin</Description>
+    <Description>An api to serve as extension for some mods.</Description>
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <AssemblyVersion>1.0.5</AssemblyVersion>
-    <FileVersion>1.0.5</FileVersion>
+    <AssemblyVersion>1.2.4.3</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

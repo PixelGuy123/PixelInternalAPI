@@ -306,7 +306,6 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <paramref name="mach"/> itself.</returns>
 		public static SodaMachine SetUses(this SodaMachine mach, int usesLeft)
 		{
-			mach.GetComponent<SodaMachineCustomComponent>().infiniteUses = usesLeft < 0;
 			mach.usesLeft = usesLeft; //_sodaMach_usesleft.SetValue(mach, usesLeft <= 0 ? 99 : usesLeft);
 
 			return mach;
