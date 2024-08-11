@@ -361,13 +361,9 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="rendererIdx"></param>
 		/// <param name="map"></param>
 		/// <returns>The instance of <see cref="AnimatedSpriteRotator"/>.</returns>
-		public static AnimatedSpriteRotator CreateAnimatedSpriteRotator<T>(this T npc, int rendererIdx, params SpriteRotationMap[] map) where T : NPC
-		{
-			var animator = npc.gameObject.AddComponent<AnimatedSpriteRotator>();
-			animator.renderer = npc.spriteRenderer[rendererIdx]; //_animatedSpriteRotator_renderer.SetValue(animator, npc.spriteRenderer[rendererIdx]);
-			animator.spriteMap = map; //_animatedSpriteRotator_spriteMap.SetValue(animator, map);
-			return animator;
-		}
+		[Obsolete("Use CreateAnimatedSpriteRotator(SpriteRenderer, SpriteRotationMap[]) instead.")]
+		public static AnimatedSpriteRotator CreateAnimatedSpriteRotator<T>(this T npc, int rendererIdx, params SpriteRotationMap[] map) where T : NPC =>
+			CreateAnimatedSpriteRotator(npc.spriteRenderer[rendererIdx], map);
 
 		/// <summary>
 		/// Creates a <see cref="AnimatedSpriteRotator"/> component for the <paramref name="npc"/>.
@@ -377,8 +373,23 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="npc"></param>
 		/// <param name="map"></param>
 		/// <returns>The instance of <see cref="AnimatedSpriteRotator"/>.</returns>
+		[Obsolete("Use CreateAnimatedSpriteRotator(SpriteRenderer, SpriteRotationMap[]) instead.")]
 		public static AnimatedSpriteRotator CreateAnimatedSpriteRotator<T>(this T npc, params SpriteRotationMap[] map) where T : NPC =>
-			CreateAnimatedSpriteRotator<T>(npc, 0, map);
+			CreateAnimatedSpriteRotator(npc, 0, map);
+
+		/// <summary>
+		/// Creates a <see cref="AnimatedSpriteRotator"/> component for a renderer.
+		/// </summary>
+		/// <param name="renderer">The target <see cref="SpriteRenderer"/> to be animated.</param>
+		/// <param name="map"></param>
+		/// <returns>The instance of <see cref="AnimatedSpriteRotator"/>.</returns>
+		public static AnimatedSpriteRotator CreateAnimatedSpriteRotator(this SpriteRenderer renderer, params SpriteRotationMap[] map)
+		{
+			var animator = renderer.gameObject.AddComponent<AnimatedSpriteRotator>();
+			animator.renderer = renderer; //_animatedSpriteRotator_renderer.SetValue(animator, npc.spriteRenderer[rendererIdx]);
+			animator.spriteMap = map; //_animatedSpriteRotator_spriteMap.SetValue(animator, map);
+			return animator;
+		}
 
 		// ******************************* Sprite Bill Boards **********************************
 		internal static SpriteRenderer _billboardprefab, _nonbillboardprefab;
