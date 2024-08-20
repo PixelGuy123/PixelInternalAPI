@@ -10,6 +10,8 @@ using System.Collections;
 using System.Collections.Generic;
 using PixelInternalAPI.Misc;
 using TMPro;
+using BepInEx.Configuration;
+
 #if DEBUG
 using MTM101BaldAPI.PlusExtensions;
 using MTM101BaldAPI.Components;
@@ -24,6 +26,7 @@ namespace PixelInternalAPI
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
 	internal class BasePlugin : BaseUnityPlugin
 	{
+		internal ConfigEntry<bool> mustCorrectSpecialRoomWeight;
 		private void Awake()
 		{
 			GlobalLogger = Logger;
@@ -34,6 +37,32 @@ namespace PixelInternalAPI
 			LoadingEvents.RegisterOnAssetsLoaded(Info, GetBaseAssets(), false);
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, AddAssetsInGame(), true);
+
+			mustCorrectSpecialRoomWeight = Config.Bind("Mod Fixes", "Correct special room weights by quantity", true, "If enabled, the API will automatically correct each special room weight to have an balanced chance of spawning in a floor according to how many variants they have.");
+
+			if ((bool)mustCorrectSpecialRoomWeight.BoxedValue)
+			{
+				GeneratorManagement.Register(this, GenerationModType.Finalizer, (_, __, ld) =>
+				{
+					ld.MarkAsNeverUnload();
+					Dictionary<RoomFunctionContainer, int> funcQuantity = [];
+					for (int i = 0; i < ld.potentialSpecialRooms.Length; i++)
+					{
+						if (!funcQuantity.ContainsKey(ld.potentialSpecialRooms[i].selection.roomFunctionContainer))
+							funcQuantity.Add(ld.potentialSpecialRooms[i].selection.roomFunctionContainer, 1);
+						else
+							funcQuantity[ld.potentialSpecialRooms[i].selection.roomFunctionContainer]++;
+					}
+
+					for (int i = 0; i < ld.potentialSpecialRooms.Length; i++)
+					{
+						if (funcQuantity.TryGetValue(ld.potentialSpecialRooms[i].selection.roomFunctionContainer, out int amount))
+							ld.potentialSpecialRooms[i].weight = 100 / amount;
+					}
+
+
+				});
+			}
 
 			ResourceManager.AddPostGenCallback((x) =>
 			{
@@ -158,6 +187,8 @@ namespace PixelInternalAPI
 
 			yield break;
 		}
+
+
 	}
 
 
@@ -230,6 +261,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.2.4.4";
+		internal const string PLUGIN_VERSION = "1.2.4.5";
 	}
 }
