@@ -210,14 +210,6 @@ namespace PixelInternalAPI
 		[HarmonyPrefix]
 		internal static bool NoDeath() => false;
 	}
-	[HarmonyPatch(typeof(BaseGameManager), "Initialize")]
-	internal static class AlwaysFullMap
-	{
-		private static void Prefix(BaseGameManager __instance)
-		{
-			__instance.CompleteMapOnReady();
-		}
-	}
 	[HarmonyPatch(typeof(PlayerMovement))]
 	internal class Fast
 	{
@@ -225,7 +217,7 @@ namespace PixelInternalAPI
 		[HarmonyPatch("Start")]
 		[HarmonyPostfix]
 		private static void PointsYeah(PlayerMovement __instance) =>
-			Singleton<CoreGameManager>.Instance.AddPoints(9999999, __instance.pm.playerNumber, false);
+			Singleton<CoreGameManager>.Instance.AddPoints(9999, __instance.pm.playerNumber, false);
 
 		[HarmonyPatch("Update")]
 		[HarmonyPostfix]
@@ -246,6 +238,9 @@ namespace PixelInternalAPI
 				}
 				hasAdded = !hasAdded;
 			}
+
+			if (Input.GetKeyDown(KeyCode.L))
+				Singleton<BaseGameManager>.Instance.CompleteMapOnReady();
 		}
 
 		readonly static ValueModifier wmod = new(3);
