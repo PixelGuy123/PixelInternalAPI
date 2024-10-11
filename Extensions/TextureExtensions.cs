@@ -231,11 +231,7 @@ namespace PixelInternalAPI.Extensions
 
 			var tex = AssetLoader.TextureFromFile(path);
 
-			var sprites = AssetLoader.SpritesFromSpritesheet(horizontalTiles, verticalTiles, pixelsPerUnit, center, tex); // MTM101 API has incorporated my implementation, yes!
-
-			Object.Destroy(tex); // Removes memory usage
-
-			return sprites;
+			return AssetLoader.SpritesFromSpritesheet(horizontalTiles, verticalTiles, pixelsPerUnit, center, tex); // MTM101 API has incorporated my implementation, yes!
 		}
 
 		/// <summary>
