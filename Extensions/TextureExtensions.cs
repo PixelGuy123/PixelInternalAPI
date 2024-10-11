@@ -231,16 +231,7 @@ namespace PixelInternalAPI.Extensions
 
 			var tex = AssetLoader.TextureFromFile(path);
 
-			int estimatedXsize = tex.width / horizontalTiles;
-			int estimatedYsize = tex.height / verticalTiles; // Gets the estimated size of each texture per tile
-															 // 
-			Sprite[] sprs = new Sprite[horizontalTiles * verticalTiles];
-			int i = 0;
-			for (int y = verticalTiles - 1; y >= 0; y--)
-				for (int x = 0; x < horizontalTiles; x++)
-					sprs[i++] = Sprite.Create(tex, new Rect(x * estimatedXsize, y * estimatedYsize, estimatedXsize, estimatedYsize), center, pixelsPerUnit, 0, SpriteMeshType.FullRect);
-			
-			return sprs;
+			return AssetLoader.SpritesFromSpritesheet(horizontalTiles, verticalTiles, pixelsPerUnit, center, tex); // MTM101 API has incorporated my implementation, yes!
 		}
 
 		/// <summary>
@@ -287,6 +278,8 @@ namespace PixelInternalAPI.Extensions
 					texs[i--] = newTexture;
 				}
 			}
+
+			Object.Destroy(tex); // Memory consuming
 
 			return texs;
 		}

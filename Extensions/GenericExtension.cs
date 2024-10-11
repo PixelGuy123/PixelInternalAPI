@@ -404,6 +404,13 @@ namespace PixelInternalAPI.Extensions
 		/// <returns>The <see cref="CustomPlayerCameraComponent"/> component.</returns>
 		public static CustomPlayerCameraComponent GetCustomCam(this PlayerManager pm) =>
 			Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).GetCustomCam();
+		/// <summary>
+		/// Tells whether the click abilitity from the player must be disabled or not.
+		/// </summary>
+		/// <param name="pm">The <see cref="PlayerManager"/> targetted.</param>
+		/// <param name="disable">If True, the <see cref="PlayerClick"/> will stop trying to check for <see cref="IClickable{T}"/>.</param>
+		public static void DisableClick(this PlayerManager pm, bool disable) =>
+			pm.GetComponent<PlayerClickDisabler>().DisableClick(disable);
 
 
 		//readonly static FieldInfo rotMap_sprites = AccessTools.Field(typeof(SpriteRotationMap), "spriteSheet");

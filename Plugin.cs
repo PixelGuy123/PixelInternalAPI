@@ -84,7 +84,7 @@ namespace PixelInternalAPI
 		// *************** Asset Load IEnumerators ***************
 		IEnumerator GetBaseAssets()
 		{
-			yield return 3;
+			yield return 4;
 			yield return "Grabbing soda machines for creation";
 			// ****** Soda machine *******
 			GenericExtensions.FindResourceObjects<SodaMachine>().Do(x => {
@@ -95,7 +95,12 @@ namespace PixelInternalAPI
 			});
 			ObjectCreationExtensions.prefab = GenericExtensions.FindResourceObject<SodaMachine>().DuplicatePrefab();
 
-			yield return "Getting sprite billboard prefabs";
+			// Player Click disables
+
+			yield return "Adding a PlayerClickDisabler for all PlayerManager prefabs...";
+			GenericExtensions.FindResourceObjects<PlayerManager>().Do(x => x.gameObject.AddComponent<PlayerClickDisabler>().AttachToClicker(x.pc));
+
+			yield return "Getting sprite billboard prefabs...";
 
 			// ******* bill boards ********
 			// Sprite Billboard object
@@ -120,7 +125,7 @@ namespace PixelInternalAPI
 			ObjectCreationExtensions._nonbillboardprefab = baseSprite;
 
 			// ******** Popups ********
-			yield return "Creating in-game popups";
+			yield return "Creating in-game popups...";
 
 			var canvas = ObjectCreationExtensions.CreateCanvas();
 			canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -178,11 +183,11 @@ namespace PixelInternalAPI
 		IEnumerator AddAssetsInGame()
 		{
 			yield return 2;
-			yield return "Adding item table to crazy vending machines";
+			yield return "Adding item table to crazy vending machines...";
 			GenericExtensions.FindResourceObjects<SodaMachine>().DoIf(x => x.potentialItems.Length > 1, x => x.potentialItems = x.potentialItems.AddRangeToArray([.. ResourceManager._vendingMachineItems])); // if > 1, then it must be a crazy machine
 
 
-			yield return "Adding item table to mystery rooms";
+			yield return "Adding item table to mystery rooms...";
 			GenericExtensions.FindResourceObjects<MysteryRoom>().Do(x => x.items = x.items.AddRangeToArray([.. ResourceManager._mysteryItems]));
 
 			yield break;
@@ -256,6 +261,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.2.4.5";
+		internal const string PLUGIN_VERSION = "1.2.4.6";
 	}
 }
