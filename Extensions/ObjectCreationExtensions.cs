@@ -437,6 +437,7 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="offset"></param>
 		/// <param name="holderMask"></param>
 		/// <returns>The <paramref name="renderer"/> itself.</returns>
+		[Obsolete("Use AddSpriteHolder(SpriteRenderer, out SpriteRenderer, Vector3, LayerMask?) instead.")]
 		public static SpriteRenderer AddSpriteHolder(this SpriteRenderer renderer, float offset, LayerMask? holderMask = null) =>
 			AddSpriteHolder(renderer, Vector3.up * offset, holderMask);
 		/// <summary>
@@ -448,9 +449,39 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="offset"></param>
 		/// <param name="holderMask"></param>
 		/// <returns>The <paramref name="renderer"/> itself.</returns>
+		[Obsolete("Use AddSpriteHolder(SpriteRenderer, out SpriteRenderer, Vector3, LayerMask?) instead.")]
 		public static SpriteRenderer AddSpriteHolder(this SpriteRenderer renderer, Vector3 offset, LayerMask? holderMask = null)
 		{
+			renderer.AddSpriteHolder(out var childRenderer, offset, holderMask);
+			return childRenderer;
+		}
+		/// <summary>
+		/// Adds a "SpriteHolder" for the <paramref name="renderer"/>. So you can include offset or collision to the renderer without necessarily putting in the same object.
+		/// <para><paramref name="holderMask"/> is null by default (and the layer will be the billboard layer, by default). When not null, it becomes the layer of the sprite holder.</para>
+		/// <para>Note that the SpriteHolder will be the one with the <see cref="RendererContainer"/> component, removing the one from the <paramref name="renderer"/> (if it exists).</para>
+		/// <para>The <paramref name="offset"/> defined will only affect the y axis.</para>
+		/// </summary>
+		/// <param name="renderer"></param>
+		/// <param name="childRenderer"></param>
+		/// <param name="offset"></param>
+		/// <param name="holderMask"></param>
+		/// <returns>The <paramref name="renderer"/> itself.</returns>
+		public static RendererContainer AddSpriteHolder(this SpriteRenderer renderer, out SpriteRenderer childRenderer, float offset, LayerMask? holderMask = null) =>
+			AddSpriteHolder(renderer, out childRenderer, Vector3.up * offset, holderMask);
+		/// <summary>
+		/// Adds a "SpriteHolder" for the <paramref name="renderer"/>. So you can include offset or collision to the renderer without necessarily putting in the same object.
+		/// <para><paramref name="holderMask"/> is null by default (and the layer will be the billboard layer, by default). When not null, it becomes the layer of the sprite holder.</para>
+		/// <para>Note that the SpriteHolder will be the one with the <see cref="RendererContainer"/> component, removing the one from the <paramref name="renderer"/> (if it exists).</para>
+		/// </summary>
+		/// <param name="renderer"></param>
+		/// <param name="childRenderer"></param>
+		/// <param name="offset"></param>
+		/// <param name="holderMask"></param>
+		/// <returns>The <paramref name="renderer"/> itself.</returns>
+		public static RendererContainer AddSpriteHolder(this SpriteRenderer renderer, out SpriteRenderer childRenderer, Vector3 offset, LayerMask? holderMask = null)
+		{
 			var parent = new GameObject("SpriteBillBoardHolder_" + renderer.name, typeof(RendererContainer));
+			childRenderer = renderer;
 			renderer.transform.SetParent(parent.transform);
 			renderer.transform.localPosition = offset;
 			if (renderer.GetComponent<RendererContainer>())
@@ -458,7 +489,7 @@ namespace PixelInternalAPI.Extensions
 
 			parent.GetComponent<RendererContainer>().renderers = [renderer];
 			parent.layer = holderMask == null ? LayerStorage.billboardLayer : holderMask.Value; // LayerMask and LayerMask? ARE DIFFERENT???
-			return renderer;
+			return parent.GetComponent<RendererContainer>();
 		}
 		/// <summary>
 		/// Adds a <typeparamref name="T"/> to the <paramref name="renderer"/>.
