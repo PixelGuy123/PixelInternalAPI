@@ -73,6 +73,10 @@ namespace PixelInternalAPI
 						Destroy(comp);
 				}
 			});
+
+#if DEBUG
+			ResourceManager.AddPostGenCallback((x) => Fast.hasAdded = false);
+#endif
 		}
 
 		internal static List<SodaMachineCustomComponent> _machines = [];
@@ -251,7 +255,7 @@ namespace PixelInternalAPI
 		readonly static ValueModifier wmod = new(3);
 		readonly static ValueModifier rmod = new(3);
 
-		static bool hasAdded = false;
+		internal static bool hasAdded = false;
 
 	}
 #endif
