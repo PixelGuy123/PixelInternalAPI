@@ -42,8 +42,12 @@ namespace PixelInternalAPI
 
 			if ((bool)mustCorrectSpecialRoomWeight.BoxedValue)
 			{
-				GeneratorManagement.Register(this, GenerationModType.Finalizer, (_, __, ld) =>
+				GeneratorManagement.Register(this, GenerationModType.Finalizer, (_, __, sco) =>
 				{
+					var ld = sco.levelObject;
+					if (ld == null)
+						return;
+
 					ld.MarkAsNeverUnload();
 					Dictionary<RoomFunctionContainer, int> funcQuantity = [];
 					for (int i = 0; i < ld.potentialSpecialRooms.Length; i++)
@@ -265,6 +269,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.2.4.7";
+		internal const string PLUGIN_VERSION = "1.2.5";
 	}
 }
