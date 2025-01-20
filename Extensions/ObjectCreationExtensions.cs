@@ -204,14 +204,15 @@ namespace PixelInternalAPI.Extensions
 			var machine = Instantiate(prefab);
 			
 
-			var renderer = machine.meshRenderer; //(MeshRenderer)_sodaMach_meshRenderer.GetValue(machine);
+			var renderer = machine.meshRenderer;
 			renderer.materials[1].mainTexture = sodaTex;
-			machine.outOfStockMat = new Material(machine.outOfStockMat) //new Material((Material)_sodaMach_outofstockmat.GetValue(machine))
+			machine.outOfStockMat = new Material(machine.outOfStockMat)
 			{
+				name = sodaOutTex.name,
 				mainTexture = sodaOutTex
-			}; ; //_sodaMach_outofstockmat.SetValue(machine, mat);
-
+			};
 			BasePlugin._machines.Add(machine.GetComponent<SodaMachineCustomComponent>());
+
 			if (isPrefab)
 				machine.gameObject.ConvertToPrefab(true);
 

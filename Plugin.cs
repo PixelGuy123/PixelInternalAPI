@@ -68,16 +68,6 @@ namespace PixelInternalAPI
 				});
 			}
 
-			ResourceManager.AddPostGenCallback((x) =>
-			{
-				foreach (var machine in FindObjectsOfType<SodaMachine>())
-				{
-					var comp = machine.GetComponent<SodaMachineCustomComponent>();
-					if (comp && !_machines.Contains(comp)) // If the machine's component wasn't found in the register, this wasn't made using the api standard methods, so should be deleted
-						Destroy(comp);
-				}
-			});
-
 #if DEBUG
 			ResourceManager.AddPostGenCallback((x) => Fast.hasAdded = false);
 #endif
@@ -95,13 +85,12 @@ namespace PixelInternalAPI
 			yield return 4;
 			yield return "Grabbing soda machines for creation";
 			// ****** Soda machine *******
-			GenericExtensions.FindResourceObjects<SodaMachine>().Do(x => {
 
-				var comp = x.gameObject.AddComponent<SodaMachineCustomComponent>();
-				comp.requiredItems.Add(Items.Quarter);
-				_machines.Add(comp);
-			});
 			ObjectCreationExtensions.prefab = GenericExtensions.FindResourceObject<SodaMachine>().DuplicatePrefab();
+			var comp = ObjectCreationExtensions.prefab.gameObject.AddComponent<SodaMachineCustomComponent>();
+			comp.requiredItems.Add(Items.Quarter);
+
+			_machines.Add(comp);
 
 			// Player Click disables
 
@@ -269,6 +258,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.2.5";
+		internal const string PLUGIN_VERSION = "1.2.6";
 	}
 }

@@ -21,11 +21,6 @@ namespace PixelInternalAPI
 		/// <param name="item"></param>
 		public static void AddMysteryItem(WeightedItemObject item) =>
 			_mysteryItems.Add(item);
-		/// <summary>
-		/// Adds the <paramref name="item"/> to all the vending machines (created with this api) to accept the <paramref name="item"/> as a quarter.
-		/// </summary>
-		/// <param name="item"></param>
-		public static void AddQuarterTypeItemToVendingMachine(this ItemObject item) => BasePlugin._machines.ForEach(x => x.requiredItems.Add(item.itemType));
 
 		/// <summary>
 		/// Adds the <paramref name="item"/> to be able of unlocking doors (just like keys).
