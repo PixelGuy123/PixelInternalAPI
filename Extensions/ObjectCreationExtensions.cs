@@ -121,6 +121,15 @@ namespace PixelInternalAPI.Extensions
 			var e = target.AddComponent<Entity>();
 			e.SetActive(false);
 			target.layer = mask;
+
+			if (rendererBase == null)
+			{
+				var placeholder = new GameObject("placeholderRendererBase");
+				rendererBase = placeholder.transform;
+				placeholder.transform.SetParent(target.transform);
+				placeholder.transform.localPosition = Vector3.zero;
+			}
+
 			e.rendererBase = rendererBase; //_entity_rendererBase.SetValue(e, rendererBase);
 			e.collider = collider;//_entity_collider.SetValue(e, collider);
 			e.externalActivity = target.AddComponent<ActivityModifier>();//_entity_activity.SetValue(e, target.AddComponent<ActivityModifier>());
