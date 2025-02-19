@@ -16,10 +16,10 @@ namespace PixelInternalAPI.Patches
 				___cameras[i].GetCustomCam().ResetFov();
 		}
 
-		[HarmonyPatch(typeof(BaseGameManager), "BeginPlay")]
-		[HarmonyPostfix] // Fix for the camera fovs
-		private static void FixAudioListener() =>
-			GlobalAudioListenerModifier.Reset();
+		//[HarmonyPatch(typeof(BaseGameManager), "BeginPlay")]
+		//[HarmonyPostfix]
+		//private static void FixAudioListener() =>
+		//	GlobalAudioListenerModifier.Reset();
 
 		[HarmonyPatch(typeof(BaseGameManager), "Initialize")]
 		[HarmonyPostfix]

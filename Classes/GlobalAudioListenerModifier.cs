@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿/*
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace PixelInternalAPI.Classes
@@ -58,3 +59,4 @@ namespace PixelInternalAPI.Classes
 		static int pause = 0;
 	}
 }
+*/
