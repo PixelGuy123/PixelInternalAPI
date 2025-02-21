@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using PixelInternalAPI.Misc;
 using TMPro;
 using BepInEx.Configuration;
+using System.Runtime.InteropServices.WindowsRuntime;
+
 
 #if DEBUG
 using MTM101BaldAPI.PlusExtensions;
@@ -196,15 +198,30 @@ namespace PixelInternalAPI
 
 #if DEBUG
 
-	[HarmonyPatch(typeof(HappyBaldi), "SpawnWait", MethodType.Enumerator)]
+	[HarmonyPatch(typeof(HappyBaldi), "Activate")]
 	internal static class QuickCheatBox
 	{
-		[HarmonyTranspiler]
-		internal static IEnumerable<CodeInstruction> Zero(IEnumerable<CodeInstruction> instructions) =>
-			new CodeMatcher(instructions)
-			.MatchForward(false, new CodeMatch(OpCodes.Ldc_I4_S, name:"9"))
-			.Set(OpCodes.Ldc_I4_0, null)
-			.InstructionEnumeration();
+		static bool Prefix(HappyBaldi __instance)
+		{
+			if (__instance.spawnNpcsOnFinishCounting)
+			{
+				Singleton<MusicManager>.Instance.StopMidi();
+				Singleton<BaseGameManager>.Instance.BeginSpoopMode();
+				__instance.ec.SpawnNPCs();
+				__instance.ec.StartEventTimers();
+			}
+			if (Singleton<CoreGameManager>.Instance.currentMode == Mode.Main)
+			{
+				__instance.ec.GetBaldi().transform.position = __instance.transform.position;
+			}
+			else if (Singleton<CoreGameManager>.Instance.currentMode == Mode.Free)
+			{
+				__instance.ec.GetBaldi().Despawn();
+			}
+			__instance.sprite.enabled = false;
+			Object.Destroy(__instance.gameObject);
+			return false;
+		}
 	}
 	[HarmonyPatch(typeof(Baldi), "CaughtPlayer")]
 	internal static class QuickBaldiNoDeath
