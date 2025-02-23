@@ -220,6 +220,7 @@ namespace PixelInternalAPI
 			}
 			__instance.sprite.enabled = false;
 			Object.Destroy(__instance.gameObject);
+			__instance.activated = true;
 			return false;
 		}
 	}
