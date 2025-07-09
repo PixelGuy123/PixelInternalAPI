@@ -1,12 +1,11 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
-using System;
 using TMPro;
-
 // using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -101,12 +100,6 @@ namespace PixelInternalAPI.Extensions
 
 		// ******************* Entity ************************
 
-		//static readonly FieldInfo _entity_rendererBase = AccessTools.Field(typeof(Entity), "rendererBase");
-		//static readonly FieldInfo _entity_collider = AccessTools.Field(typeof(Entity), "collider");
-		//static readonly FieldInfo _entity_trigger = AccessTools.Field(typeof(Entity), "trigger");
-		//static readonly FieldInfo _entity_activity = AccessTools.Field(typeof(Entity), "externalActivity");
-		//static readonly FieldInfo _entity_etrigger = AccessTools.Field(typeof(Entity), "iEntityTrigger");
-		//static readonly FieldInfo _entity_CollisionMask = AccessTools.Field(typeof(Entity), "collisionLayerMask");
 		/// <summary>
 		/// Creates an <see cref="Entity"/> component to an object. Warning: Adding an <see cref="Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs.
 		/// </summary>
@@ -130,10 +123,17 @@ namespace PixelInternalAPI.Extensions
 				placeholder.transform.localPosition = Vector3.zero;
 			}
 
-			e.rendererBase = rendererBase; //_entity_rendererBase.SetValue(e, rendererBase);
-			e.collider = collider;//_entity_collider.SetValue(e, collider);
-			e.externalActivity = target.AddComponent<ActivityModifier>();//_entity_activity.SetValue(e, target.AddComponent<ActivityModifier>());
-			e.trigger = triggerCollider;//_entity_trigger.SetValue(e, triggerCollider);
+			e.rendererBase = rendererBase;
+			e.collider = collider;
+			e.externalActivity = target.AddComponent<ActivityModifier>();
+			e.trigger = triggerCollider;
+
+			var rigidBody = target.GetComponent<Rigidbody>();
+
+			if (rigidBody)
+				Destroy(rigidBody);
+
+			target.AddStaticRigidBody(); // Adds rigid body to entity
 
 			return e;
 		}
@@ -191,6 +191,29 @@ namespace PixelInternalAPI.Extensions
 			return entity;
 		}
 
+		/// <summary>
+		/// Adds a static <see cref="Rigidbody"/> component to the specified <see cref="GameObject"/> with predefined settings (usually for <see cref="Entity"/> or clickable hotspots objects.).
+		/// </summary>
+		/// <param name="obj">The <see cref="GameObject"/> to which the <see cref="Rigidbody"/> will be added.</param>
+		/// <returns>The added <see cref="Rigidbody"/> component.</returns>
+		public static Rigidbody AddStaticRigidBody(this GameObject obj)
+		{
+			var rigid = obj.AddComponent<Rigidbody>();
+
+			rigid.mass = 0f;
+			rigid.constraints = RigidbodyConstraints.FreezeAll;
+			rigid.angularDrag = 0f;
+			rigid.freezeRotation = true;
+			rigid.collisionDetectionMode = CollisionDetectionMode.Discrete;
+			rigid.maxDepenetrationVelocity = 10f;
+			rigid.maxAngularVelocity = 7f;
+			rigid.sleepThreshold = 0.005f;
+			rigid.solverIterations = 6;
+			rigid.solverVelocityIterations = 1;
+
+			return rigid;
+		}
+
 		// ************************** Custom Vending Machines ******************************
 
 		internal static SodaMachine prefab;
@@ -211,7 +234,7 @@ namespace PixelInternalAPI.Extensions
 		public static SodaMachine CreateSodaMachineInstance(Texture sodaTex, Texture sodaOutTex, bool isPrefab = true)
 		{
 			var machine = Instantiate(prefab);
-			
+
 
 			var renderer = machine.meshRenderer;
 			renderer.materials[1].mainTexture = sodaTex;
@@ -256,7 +279,7 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="mach"></param>
 		/// <param name="potentialItems"></param>
 		/// <returns>The <paramref name="mach"/> itself.</returns>
-		public static SodaMachine AddNewPotentialItems(this SodaMachine mach,params WeightedItemObject[] potentialItems)
+		public static SodaMachine AddNewPotentialItems(this SodaMachine mach, params WeightedItemObject[] potentialItems)
 		{
 			//(WeightedItemObject[])_sodaMach_potentialitems.GetValue(mach);
 			mach.SetPotentialItems(mach.potentialItems.AddRangeToArray(potentialItems));
@@ -486,7 +509,7 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="texture">The <see cref="Texture2D"/> of the image.</param>
 		/// <param name="coverTheEntireScreen">If true, it'll have the same parameters as the gum overlay, to cover the entire screen.</param>
 		/// <returns>An <see cref="Image"/> instance.</returns>
-		public static Image CreateImage(Canvas canvas, Texture2D texture, bool coverTheEntireScreen = true) => 
+		public static Image CreateImage(Canvas canvas, Texture2D texture, bool coverTheEntireScreen = true) =>
 			CreateImage(canvas, texture != null ? AssetLoader.SpriteFromTexture2D(texture, 1f) : null, coverTheEntireScreen);
 
 		/// <summary>
@@ -522,7 +545,7 @@ namespace PixelInternalAPI.Extensions
 		/// <param name="coverTheEntireScreen">If true, it'll have the same parameters as the gum overlay, to cover the entire screen.</param>
 		/// <returns>An <see cref="Image"/> instance with no texture.</returns>
 		public static Image CreateImage(Canvas canvas, bool coverTheEntireScreen = true) =>
-			CreateImage(canvas, sprite:null, coverTheEntireScreen);
+			CreateImage(canvas, sprite: null, coverTheEntireScreen);
 
 	}
 }
