@@ -36,39 +36,40 @@ namespace PixelInternalAPI
 			Harmony h = new(ModInfo.PLUGIN_GUID);
 			h.PatchAll();
 
-			LoadingEvents.RegisterOnAssetsLoaded(Info, GetBaseAssets(), false);
+			LoadingEvents.RegisterOnAssetsLoaded(Info, GetBaseAssets(), LoadingEventOrder.Pre);
 
-			LoadingEvents.RegisterOnAssetsLoaded(Info, AddAssetsInGame(), true);
+			LoadingEvents.RegisterOnAssetsLoaded(Info, AddAssetsInGame(), LoadingEventOrder.Post);
 
-			mustCorrectSpecialRoomWeight = Config.Bind("Mod Fixes", "Correct special room weights by quantity", true, "If enabled, the API will automatically correct each special room weight to have an balanced chance of spawning in a floor according to how many variants they have.");
+			// Commented out to be moved to Tweaks+ later
+			// mustCorrectSpecialRoomWeight = Config.Bind("Mod Fixes", "Correct special room weights by quantity", true, "If enabled, the API will automatically correct each special room weight to have an balanced chance of spawning in a floor according to how many variants they have.");
 
-			if ((bool)mustCorrectSpecialRoomWeight.BoxedValue)
-			{
-				GeneratorManagement.Register(this, GenerationModType.Finalizer, (_, __, sco) =>
-				{
-					var ld = sco.levelObject;
-					if (ld == null)
-						return;
+			// if ((bool)mustCorrectSpecialRoomWeight.BoxedValue)
+			// {
+			// 	GeneratorManagement.Register(this, GenerationModType.Finalizer, (_, __, sco) =>
+			// 	{
+			// 		var ld = sco.levelObject;
+			// 		if (ld == null)
+			// 			return;
 
-					ld.MarkAsNeverUnload();
-					Dictionary<RoomFunctionContainer, int> funcQuantity = [];
-					for (int i = 0; i < ld.potentialSpecialRooms.Length; i++)
-					{
-						if (!funcQuantity.ContainsKey(ld.potentialSpecialRooms[i].selection.roomFunctionContainer))
-							funcQuantity.Add(ld.potentialSpecialRooms[i].selection.roomFunctionContainer, 1);
-						else
-							funcQuantity[ld.potentialSpecialRooms[i].selection.roomFunctionContainer]++;
-					}
+			// 		ld.MarkAsNeverUnload();
+			// 		Dictionary<RoomFunctionContainer, int> funcQuantity = [];
+			// 		for (int i = 0; i < ld.potentialSpecialRooms.Length; i++)
+			// 		{
+			// 			if (!funcQuantity.ContainsKey(ld.potentialSpecialRooms[i].selection.roomFunctionContainer))
+			// 				funcQuantity.Add(ld.potentialSpecialRooms[i].selection.roomFunctionContainer, 1);
+			// 			else
+			// 				funcQuantity[ld.potentialSpecialRooms[i].selection.roomFunctionContainer]++;
+			// 		}
 
-					for (int i = 0; i < ld.potentialSpecialRooms.Length; i++)
-					{
-						if (funcQuantity.TryGetValue(ld.potentialSpecialRooms[i].selection.roomFunctionContainer, out int amount))
-							ld.potentialSpecialRooms[i].weight = 100 / amount;
-					}
+			// 		for (int i = 0; i < ld.potentialSpecialRooms.Length; i++)
+			// 		{
+			// 			if (funcQuantity.TryGetValue(ld.potentialSpecialRooms[i].selection.roomFunctionContainer, out int amount))
+			// 				ld.potentialSpecialRooms[i].weight = 100 / amount;
+			// 		}
 
 
-				});
-			}
+			// 	});
+			// }
 
 #if DEBUG
 			ResourceManager.AddPostGenCallback((x) => Fast.hasAdded = false);
@@ -276,6 +277,6 @@ namespace PixelInternalAPI
 
 		internal const string PLUGIN_NAME = "Pixel\'s Internal API";
 
-		internal const string PLUGIN_VERSION = "1.2.6.2";
+		internal const string PLUGIN_VERSION = "1.2.7.1";
 	}
 }
